@@ -1,4 +1,3 @@
-# https://realpython.com/gradient-descent-algorithm-python/
 import numpy as np
 import matplotlib.pyplot as plt
 
