@@ -69,3 +69,32 @@ pc.explained_variance_ratio_
 
 principalDf = pd.DataFrame(data = principalComponents, columns = ["component 1", "component 2", "component 3", "component 4"])
 
+# KFold provides train/test indices to split data in train/test sets. Split dataset into k consecutive folds (without shuffling by default).
+# Each fold is then used once as a validation while the k - 1 remaining folds form the training set.
+kf = KFold(20)
+
+for a,b in kf.split(principalDf):
+    X_train, X_test = Xs[a], Xs[b]
+    y_train, y_test = Y[a], Y[b]
+
+# apply different methods
+lmr = LinearRegression()
+dtr = DecisionTreeRegressor()
+rfr = RandomForestRegressor()
+gbr = GradientBoostingRegressor()
+
+fit1 = lmr.fit(X_train, y_train) # fit training data to linear regressor
+fit2 = dtr.fit(X_train, y_train) # fit training data to Decision Tree Regressor
+fit3 = rfr.fit(X_train, y_train) # fit training data to Random Forest Regressor
+fit4 = gbr.fit(X_train, y_train) # fit training data to Gradient Boosting Regressor
+
+print("Accuracy Score of Linear regression on train set", fit1.score(X_train,y_train)*100)
+print("Accuracy Score of Decision Tree on train set", fit2.score(X_train,y_train)*100)
+print("Accuracy Score of Random Forests on train set", fit3.score(X_train,y_train)*100)
+print("Accuracy Score of Gradient Boosting on train set", fit4.score(X_train,y_train)*100)
+
+print("Accuracy Score of Linear regression on test set", fit1.score(X_test,y_test)*100)
+print("Accuracy Score of Decision Tree on test set", fit2.score(X_test,y_test)*100)
+print("Accuracy Score of Random Forests on test set", fit3.score(X_test,y_test)*100)
+print("Accuracy Score of Gradient Boosting on testset", fit4.score(X_test,y_test)*100)
+
