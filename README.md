@@ -6,6 +6,7 @@ main ds tools:
 * pandas
 * matplotlib
 * scipy
+* sklearn
 * statistics
 
 dev tools:
