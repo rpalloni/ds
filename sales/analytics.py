@@ -72,10 +72,10 @@ ax.grid(b=True, color='grey',
         alpha=0.2)
 ax.invert_yaxis()
 ax.set_title('Total sales per month', loc='left', )
-ax.ticklabel_format(style='plain')
 fig.text(0.9, 0.15, 'Source: db', fontsize=12,
          color='grey', ha='right', va='bottom',
          alpha=0.7)
+ax.ticklabel_format(style='plain')
 plt.show()
 
 
