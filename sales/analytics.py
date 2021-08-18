@@ -130,3 +130,25 @@ plt.plot(hr, qnt_hr)
 plt.xlabel('Hour')
 plt.ylabel('Quantity')
 plt.grid()
+
+### Product basket
+# number of products per order
+df.groupby('Order ID').agg({'Product': 'count'}).sort_values(by=['Product'], ascending=False).reset_index()
+# order with max number of products
+df[df['Order ID'] == '160873']
+# extract only multiproduct orders
+multiproduct_orders = df[df['Order ID'].duplicated(keep=False)]
+# combine products to create a new grouping column
+multiproduct_orders['Product Basket'] = multiproduct_orders.groupby('Order ID')['Product'].transform(lambda x: ','.join(x))
+# drop order duplicates
+multiproduct_orders = multiproduct_orders.drop_duplicates(subset=['Order ID', 'Product Basket'])
+multiproduct_orders[multiproduct_orders['Order ID'] == '160873']
+
+multiproduct_orders.groupby(['Product Basket'])['Order ID'].count().sort_values(ascending=False).reset_index()
+
+# caveats
+multiproduct_orders[multiproduct_orders['Product Basket'] == 'iPhone,Lightning Charging Cable']['Order ID'].count()
+multiproduct_orders[multiproduct_orders['Product Basket'] == 'Lightning Charging Cable,iPhone']['Order ID'].count()
+
+multiproduct_orders[multiproduct_orders['Product Basket'].str.contains('iPhone,Lightning Charging Cable')]['Order ID'].count()
+multiproduct_orders[multiproduct_orders['Product Basket'].str.contains('Lightning Charging Cable,iPhone')]['Order ID'].count()
