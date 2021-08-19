@@ -1,7 +1,7 @@
 # ds
-ds and stats
+DS and stats
 
-main ds tools:
+Libs:
 * numpy 
 * pandas
 * matplotlib
@@ -9,7 +9,7 @@ main ds tools:
 * sklearn
 * statistics
 
-dev tools:
+Dev tools:
 * Atom
 * Hydrogen https://github.com/nteract/hydrogen
 
