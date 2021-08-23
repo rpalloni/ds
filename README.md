@@ -1,5 +1,5 @@
 # ds
-DS and stats
+## DS and stats
 
 Libs:
 * numpy 
