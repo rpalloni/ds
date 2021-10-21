@@ -1,23 +1,61 @@
+import re
 import requests
 
-# get github data
+# get github repo data
 repo_list_url = "https://api.github.com/users/rpalloni/repos"
 repo_comm_url = "https://api.github.com/repos/rpalloni/{name}/commits"
 
-repo_list = requests.get(repo_list_url).json() # too many data
-repo_name = []
-for repo in repo_list:
-    repo_name.append(repo['name'])
 
-for name in repo_name:
-    comm_list = requests.get(f'https://api.github.com/repos/rpalloni/{name}/commits').json() # too many data
-    
+headers = {'Authorization': 'token ' + token} # set token
+repo_data = requests.get(repo_list_url, headers=headers).json() # too many data, just need name
+
+repo_ncommit = {}
+for repo in repo_data:
+    repo_name = repo['name']
+    repo_url = f'https://api.github.com/repos/rpalloni/{repo_name}/commits?per_page=1'
+    repo_ncommit[repo_name] = re.search('\d+$', requests.get(repo_url).links['last']['url']).group() # too many data, just need n commits
+
+repo_ncommit
+
+
 '''    
 GraphQL is a query language for an API.
 It provides a standard way to:
    * describe data provided by a server in a statically typed Schema
-   * request data in a Query which exactly describes your data requirements
-   * receive data in a Response containing only the data you requested
+   * request data in a query which exactly describes the data requirements
+   * receive data in a response containing only the data requested
 '''
 
-import graphene
+# github graphql api
+
+gql_query = """
+{
+  viewer {
+    repositories(first: 30) {
+      edges {
+        node {
+          name
+          refs(first: 100, refPrefix: "refs/heads/") {
+            edges {
+              node {
+                name
+                target {
+                  ... on Commit {
+                    history(first: 0) {
+                      totalCount
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+"""
+
+data = requests.post('https://api.github.com/graphql', headers=headers, json={'query': query}).json() # only requested data
+data['data']['viewer']['repositories']['edges']
+
