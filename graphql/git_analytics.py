@@ -16,8 +16,8 @@ for name in repo_name:
 GraphQL is a query language for an API.
 It provides a standard way to:
    * describe data provided by a server in a statically typed Schema
-   * request data in a Query which exactly describes your data requirements and
-   * receive data in a Response containing only the data you requested.
+   * request data in a Query which exactly describes your data requirements
+   * receive data in a Response containing only the data you requested
 '''
 
 import graphene
