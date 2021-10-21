@@ -18,7 +18,7 @@ for repo in repo_data:
 repo_ncommit
 
 
-'''    
+'''
 GraphQL is a query language for an API.
 It provides a standard way to:
    * describe data provided by a server in a statically typed Schema
@@ -56,6 +56,5 @@ gql_query = """
 }
 """
 
-data = requests.post('https://api.github.com/graphql', headers=headers, json={'query': query}).json() # only requested data
+data = requests.post('https://api.github.com/graphql', headers=headers, json={'query': gql_query}).json() # only requested data
 data['data']['viewer']['repositories']['edges']
-

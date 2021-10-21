@@ -1,12 +1,12 @@
-from graphene import Schema, Field, String, Int
+import requests
+from graphene import Schema, Field, String, Int, ObjectType
 
-
-class Folder(graphene.ObjectType):
+class Folder(ObjectType):
     name = String()
     ncommits = Int()
 
 
-class Query(graphene.ObjectType):
+class Query(ObjectType):
 
     folder = Field(Folder)
 
@@ -44,4 +44,5 @@ gql_query = """
 }
 """
 
-result = schema.execute(query)
+result = schema.execute(gql_query)
+print(result.data["folder"])
