@@ -5,6 +5,7 @@ from gql import gql, Client
 from gql.transport.requests import RequestsHTTPTransport
 #from gql.transport.aiohttp import AIOHTTPTransport # async request
 
+token = 'git_token'
 headers = {'Authorization': 'token ' + token} # set token
 
 client = Client(transport=RequestsHTTPTransport(url='https://api.github.com/graphql', headers=headers))
@@ -39,5 +40,9 @@ gql_query = gql(
 """
 )
 
-result = client.execute(gql_query)
-print(result)
+repo_data = client.execute(gql_query)['viewer']['repositories']['edges']
+
+repo_ncommit = {}
+for repo in repo_data:
+  repo_ncommit[repo['node']['name']] = repo['node']['refs']['edges'][0]['node']['target']['history']['totalCount']
+print(repo_ncommit)
