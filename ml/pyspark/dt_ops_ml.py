@@ -1,4 +1,6 @@
 # pip3 install pyspark
+# $SPARK_HOME: ../python3.8/dist-packages/pyspark/
+
 
 from pyspark.sql import SparkSession
 from pyspark import SparkFiles
@@ -10,9 +12,12 @@ from pyspark.ml.regression import LinearRegression
 
 url = 'https://raw.githubusercontent.com/rpalloni/dataset/master/airquality.csv'
 
-# create pyspark session
-spark = SparkSession.builder.appName('Session01').getOrCreate()
-spark
+# create spark session
+spark = SparkSession.builder.master('local').appName('AirQuality').getOrCreate()
+spark # open Spark Web UI to monitor jobs/stages/storage/env/executors/SQL
+
+# configure and start spark history server (app log)
+# https://sparkbyexamples.com/spark/spark-history-server-to-monitor-applications/
 
 spark.sparkContext.addFile(url)
 
@@ -26,12 +31,16 @@ schema = StructType() \
 
 df_s = spark.read.csv("file://"+SparkFiles.get('airquality.csv'), header=True, schema=schema) # header present in file
 
-df_s
+type(df_s) # pyspark.sql.dataframe.DataFrame
 df_s.show()
 df_s.count()
 df_s.columns
 df_s.select("Ozone").show(10)
 df_s.describe(['Ozone', 'SolarRay']).show()
+
+# SQL syntax
+df_s.createOrReplaceTempView('airdata')
+spark.sql('select * from airdata limit 10').show()
 
 # NAs
 df_s.select([count(when(isnan(c) | col(c).isNull(), c)).alias(c) for c in df_s.columns]).show()
@@ -76,3 +85,6 @@ pred.r2adj
 pred.meanAbsoluteError
 pred.meanSquaredError
 pred.predictions.show()
+
+# end session
+spark.stop()
