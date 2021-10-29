@@ -1,9 +1,12 @@
+# pip install pyspark
+# $SPARK_HOME: ../python3.8/dist-packages/pyspark/
+
 from pyspark import SparkContext
 from pyspark.mllib.stat import Statistics
+from pyspark.mllib.random import RandomRDDs
 
-# create spark session
+# create spark context => entry point (gateway) of the app to Apache Spark
 sc = SparkContext(appName="Stats")
-
 
 inputData = [
     [2, 2, 3],
@@ -21,3 +24,10 @@ seriesy = sc.parallelize([190, 118, 149, 313, 300, 99, 19, 194, 256, 65, 334, 30
 
 c = Statistics.corr(seriesx, seriesy, method='pearson')
 print(c)
+
+
+# generate a random RDD with 100 i.i.d. values drawn from N(0,1) evenly divided in 10 partitions
+data = RandomRDDs.uniformRDD(sc, 100, 10)
+data.collect()
+datasq = data.map(lambda d: d*d)
+datasq.collect()

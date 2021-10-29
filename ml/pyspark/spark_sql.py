@@ -26,9 +26,9 @@ rdd_convert = dataframe.rdd
 # Obtaining contents of df as Pandas dataFrame
 dataframe.toPandas()
 
-# repartition in rdd
-dataframe.repartition(10).rdd.getNumPartitions()
-dataframe.coalesce(1).rdd.getNumPartitions()
+# divide/merge rdd
+dataframe.repartition(10).rdd.getNumPartitions() # split data into an RDD with 10 partitions
+dataframe.coalesce(1).rdd.getNumPartitions() # reduce to 1 partition
 
 
 ################### DataFrame API ###################

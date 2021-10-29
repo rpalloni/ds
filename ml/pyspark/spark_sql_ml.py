@@ -1,24 +1,22 @@
-# pip3 install pyspark
-# $SPARK_HOME: ../python3.8/dist-packages/pyspark/
-
-
 from pyspark.sql import SparkSession
 from pyspark import SparkFiles
-from pyspark.sql.types import StructType, IntegerType, DoubleType, StringType
 
+from pyspark.sql.types import StructType, IntegerType, DoubleType, StringType
 from pyspark.sql.functions import isnan, when, count, col
+
 from pyspark.ml.feature import Imputer, VectorAssembler
 from pyspark.ml.regression import LinearRegression
 
-url = 'https://raw.githubusercontent.com/rpalloni/dataset/master/airquality.csv'
 
 # create spark session
-spark = SparkSession.builder.master('local').appName('AirQuality').getOrCreate()
+spark = SparkSession.builder.master('local[4]').appName('AirQuality').getOrCreate()
 spark # open Spark Web UI to monitor jobs/stages/storage/env/executors/SQL
 
 # configure and start spark history server (app log)
 # https://sparkbyexamples.com/spark/spark-history-server-to-monitor-applications/
 
+
+url = 'https://raw.githubusercontent.com/rpalloni/dataset/master/airquality.csv'
 spark.sparkContext.addFile(url)
 
 schema = StructType() \
@@ -65,7 +63,7 @@ df_s.groupBy('Month').avg('Ozone').show()
 df_s.groupBy('Month').max('Ozone').show()
 
 
-# MLlib
+# merge multiple columns in a single vector column
 predictors_assembler = VectorAssembler(
     inputCols=['SolarRay_imputed', 'Wind', 'Temp'],
     outputCol='predictors')
@@ -79,6 +77,7 @@ lm = LinearRegression(featuresCol='predictors', labelCol='Ozone_imputed')
 res = lm.fit(train_data)
 res.coefficients
 res.intercept
+res.summary.residuals.show()
 
 pred = res.evaluate(test_data)
 pred.r2adj

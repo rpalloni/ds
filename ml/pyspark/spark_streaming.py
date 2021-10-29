@@ -22,7 +22,7 @@ inputStream = ssc.queueStream(rddQueue) # transform RDD in a streaming queue => 
 inputStream.reduce(add).pprint() # each time an input is recived, apply add as reduce operation
 
 ssc.start()
-sleep(5)
-ssc.stop(stopSparkContext=True, stopGraceFully=True)
-# streaming data differs from batch data as it is not clear when data will stop coming in
-# so the streming context must be stopped
+ssc.awaitTerminationOrTimeout(10) # wait for the computation to terminate or timeout
+ssc.stop()
+# streaming data differs from batch data as it is not clear when
+# data will stop coming in so the streming context must be stopped
