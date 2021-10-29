@@ -1,9 +1,8 @@
 from pyspark.sql import SparkSession
-from pyspark import SparkFiles
 from pyspark.sql.functions import when
 
 # create spark session
-sc = SparkSession.builder.appName("PySparkExample")\
+sc = SparkSession.builder.appName("NYTbooks")\
     .config("spark.sql.shuffle.partitions", "50") \
     .config("spark.driver.maxResultSize", "5g") \
     .config("spark.sql.execution.arrow.enabled", "true")\
