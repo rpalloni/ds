@@ -1,6 +1,6 @@
 # PySpark
 
-Overview of the Spark ecosystem components:
+Spark's ecosystem components:
 * core
 * SQL
 * streaming
