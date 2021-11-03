@@ -5,3 +5,6 @@ Spark's ecosystem components:
 * SQL
 * streaming
 * MLlib
+
+Docs: http://spark.apache.org/docs/latest/api/python/index.html
+
