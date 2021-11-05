@@ -88,7 +88,7 @@ gql_query_commits = gql(
 
 commit_data = client.execute(gql_query_commits)['viewer']['repositories']['edges']
 
-df = pd.DataFrame(pd.json_normalize(commit_data, ['node', 'refs', 'edges', 'node', 'target', 'history', 'edges']))
+df = pd.DataFrame(pd.json_normalize(commit_data, ['node', 'refs', 'edges', 'node', 'target', 'history', 'edges'], meta=['node']))
 
 df['committedDateCET'] = pd.to_datetime(df['node.committedDate']).dt.tz_convert('Europe/Rome')
 df['committedYear'] = pd.to_datetime(df['committedDateCET']).dt.year
