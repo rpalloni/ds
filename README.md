@@ -10,11 +10,9 @@ DS tools:
 Libs:
 * numpy 
 * pandas
-* matplotlib
-* scipy
 * sklearn
 * pyspark
-* statistics
+* tensorflow
 
 
 
