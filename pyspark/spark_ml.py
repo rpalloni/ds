@@ -20,8 +20,14 @@ url = 'https://raw.githubusercontent.com/rpalloni/dataset/master/bankruptcy.txt'
 
 sc.addFile(url)
 
-data = sc.textFile("file://"+SparkFiles.get('bankruptcy.txt')) # RDD
-data.count()
+rdd = sc.textFile("file://"+SparkFiles.get('bankruptcy.txt'))
+rdd.count()
+
+# Print the RDD content
+print(rdd.collect())
+
+# Define columns name
+cols = ["IndRisk", "MngRisk", "FinFlex", "Cred", "Compet", "OpRisk", "Class"]
 
 
 
