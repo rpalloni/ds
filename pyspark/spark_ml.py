@@ -1,10 +1,9 @@
 from pyspark import SparkContext
 from pyspark import SparkFiles
 from pyspark.sql import SparkSession
-from pyspark.sql.types import StructType, StructField, StringType, IntegerType
-from pyspark.ml.feature import VectorAssembler
+from pyspark.sql.types import StructType, StructField, StringType
+from pyspark.ml.feature import VectorAssembler, StringIndexer
 from pyspark.ml.classification import LogisticRegression
-from pyspark.mllib.clustering import KMeans, KMeansModel
 
 '''
 P=positive, A=Average, N=Negative, B=Bankruptcy, NB=NonBankruptcy
@@ -53,23 +52,31 @@ df = ss.createDataFrame(rdd, schema)
 df.printSchema()
 df.show()
 
+# Refactor categorical to numerical
+indexer = StringIndexer(
+    inputCols=['IndRisk', 'MngRisk', 'FinFlex', 'Cred', 'Compet', 'OpRisk', 'Class'],
+    outputCols=['IndRisk_idx', 'MngRisk_idx', 'FinFlex_idx', 'Cred_idx', 'Compet_idx', 'OpRisk_idx', 'Class_idx'])
+dfi = indexer.fit(df).transform(df)
+dfi.show()
+
 # Logistic Regression
 predictors_assembler = VectorAssembler(
-    inputCols=['IndRisk', 'MngRisk', 'FinFlex', 'Cred', 'Compet', 'OpRisk'],
+    inputCols=['IndRisk_idx', 'MngRisk_idx', 'FinFlex_idx', 'Cred_idx', 'Compet_idx', 'OpRisk_idx'],
     outputCol='predictors')
 
-dfl = predictors_assembler.transform(df)
+dfl = predictors_assembler.transform(dfi)
 dfl.show()
 
 train_data, test_data = dfl.randomSplit([0.75, 0.25])
-lm = LogisticRegression(featuresCol='predictors', labelCol='Class')
+lm = LogisticRegression(featuresCol='predictors', labelCol='Class_idx')
 
 res = lm.fit(train_data)
 res.coefficients
 res.intercept
-res.summary.residuals.show()
+res.summary.roc.show()
 
 pred = res.evaluate(test_data)
+pred.accuracy
 
 # end session
 ss.stop()
