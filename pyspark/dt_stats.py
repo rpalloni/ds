@@ -15,6 +15,14 @@ inputData = [
 ]
 
 matrix = sc.parallelize(inputData) # RDD
+type(matrix)
+print(matrix.collect())
+
+for i in matrix.take(2):
+    print(i)
+
+flat = matrix.flatMap(lambda n: n)
+print(flat.collect())
 
 summary = Statistics.colStats(matrix)
 print(summary.mean()) # [2 5 3]
