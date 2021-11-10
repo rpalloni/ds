@@ -7,6 +7,7 @@ from pyspark.mllib.random import RandomRDDs
 
 # create spark context => entry point (gateway) of the app to Apache Spark
 sc = SparkContext(appName="Stats")
+sc.version # version
 
 inputData = [
     [2, 2, 3],
