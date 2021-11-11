@@ -1,3 +1,11 @@
+'''
+a tensor is a vector/matrix of n dimension that represents all type of data
+
+    | 1 |       | 2  1 |        | | 1 2 | | 5 6 | |
+    | 2 |       | 4  3 |        | | 3 4 | | 8 4 | |
+    | 3 |       | 6  4 |        | | 3 1 | | 2 2 | |
+    vector       matrix               tensor
+'''
 import tensorflow as tf
 print(tf.__version__)
 
