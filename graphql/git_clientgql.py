@@ -13,7 +13,7 @@ headers = {'Authorization': 'token ' + token} # set token
 client = Client(transport=RequestsHTTPTransport(url='https://api.github.com/graphql', headers=headers))
 
 gql_query_repos = gql(
-"""
+    """
 {
   viewer {
     repositories(first: 30) {
@@ -89,14 +89,16 @@ gql_query_commits = gql(
 commit_data = client.execute(gql_query_commits)['viewer']['repositories']['edges']
 
 df = pd.DataFrame(pd.json_normalize(commit_data, ['node', 'refs', 'edges', 'node', 'target', 'history', 'edges'], meta=['node']))
+df.head()
 
 df['committedDateCET'] = pd.to_datetime(df['node.committedDate']).dt.tz_convert('Europe/Rome')
+df['committedWeekDay'] = pd.to_datetime(df['committedDateCET']).dt.weekday # Monday=0, Sunday=6
 df['committedYear'] = pd.to_datetime(df['committedDateCET']).dt.year
-df['committedDateCET'] = pd.to_datetime(df['committedDateCET']).dt.hour
+df['committedDateCET'] = pd.to_datetime(df['committedDateCET']).dt.hour  # .dt.floor('h')
 
 
 df.groupby(df["committedDateCET"]).count()
 
-df[df['committedYear'] == 2021].groupby(df["committedDateCET"]).count()
+df[(df['committedYear'] == 2021) & (df['committedWeekDay'] != 5 | df['committedWeekDay'] != 6)].groupby(df["committedDateCET"]).count()
 
 df.to_csv('data.csv')
