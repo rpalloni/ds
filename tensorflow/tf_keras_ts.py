@@ -18,6 +18,7 @@ from sklearn.model_selection import train_test_split
 
 df = pd.read_csv('air_pollution.csv', sep=' ')
 df.head()
+df.shape
 
 df['DateTime'] = pd.to_datetime(df['Date'] + ' ' + df['Time']).dt.floor('h')
 df.drop(['Date', 'Time'], axis=1, inplace=True)
@@ -37,7 +38,6 @@ y = np.ravel(df['TEMP']) # target
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=123)
 
-
 scaler = StandardScaler().fit(X_train)
 X_train = scaler.transform(X_train)
 X_test = scaler.transform(X_test)
@@ -46,14 +46,21 @@ X_test = scaler.transform(X_test)
 X_train = np.reshape(X_train, (X_train.shape[0], 1, X_train.shape[1]))
 X_test = np.reshape(X_test, (X_test.shape[0], 1, X_test.shape[1]))
 
-y_train = np.reshape(y_train, (-1, 1))
-y_test = np.reshape(y_test, (-1, 1))
+y_train = np.reshape(y_train, (y_train.shape[0], 1,))
+y_test = np.reshape(y_test, (y_test.shape[0], 1,))
 
 # LSTM Neural Network
 model = Sequential()
-model.add(LSTM(4, input_shape=(None, 1, X.shape[1])))
+model.add(LSTM(4, input_shape=(1, 17)))
 model.add(Dense(1))
 
 
 model.compile(loss='mean_squared_error', optimizer='adam')
 model.fit(X_train, y_train, epochs=5, batch_size=1, verbose=1)
+
+
+y_pred = model.predict(X_test)
+
+score = model.evaluate(X_test, y_test, verbose=1)
+
+print(score)
