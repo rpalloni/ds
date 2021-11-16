@@ -33,9 +33,11 @@ datar = pd.read_csv("http://archive.ics.uci.edu/ml/machine-learning-databases/wi
 
 dataw.head()
 dataw.shape
+dataw.isnull().sum()
 
 datar.head()
 datar.shape
+datar.isnull().sum()
 
 
 # EDA
