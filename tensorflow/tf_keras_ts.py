@@ -67,11 +67,11 @@ train_size = int(df.shape[0] * 0.75)
 X_train = df[0:train_size]
 X_test = df[train_size:df.shape[0]]
 
-y_train = X_train['TEMP']
-y_test = X_test['TEMP']
+y_train = X_train.pop('TEMP') # extract and drop var from df
+y_test = X_test.pop('TEMP')
 
-X_train = X_train.drop(['TEMP', 'DateTime'], axis=1)
-X_test = X_test.drop(['TEMP', 'DateTime'], axis=1)
+X_train = X_train.drop(['DateTime'], axis=1)
+X_test = X_test.drop(['DateTime'], axis=1)
 
 
 scaler = StandardScaler().fit(X_train)
