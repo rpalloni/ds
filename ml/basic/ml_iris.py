@@ -22,6 +22,7 @@ df['target_is_setosa'] = (df['target_class'] == 'setosa').astype(int)
 df.head()
 df.describe()
 df['target_class'].value_counts()
+df['target_class'].value_counts().plot(kind='barh', color=['green','purple','blue'])
 
 sns.pairplot(df, hue='target_class')
 plt.show()
