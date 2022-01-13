@@ -40,7 +40,7 @@ int.shape
 X = np.concatenate([int,solar], axis=1)
 # X = np.hstack(int, solar)
 
-np.dot(X.T,X) # .transpose()
+np.dot(X.T,X) # https://en.wikipedia.org/wiki/Dot_product
 
 np.dot(X.T,X)[0,0]
 np.dot(X.T,X)[0,1]
