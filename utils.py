@@ -88,6 +88,7 @@ df = pd.read_csv('https://raw.githubusercontent.com/rpalloni/dataset/master/tita
 # pd.set_option('display.max_columns', None) # full cols list
 
 df.head()
+df.loc[0] # first row
 df.rename(columns={'pclass': 'class'}, inplace=True) # inplace sobstitute instead of create a copy
 df.describe()
 
