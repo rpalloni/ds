@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 
 # basic gradient descendent
@@ -14,12 +15,14 @@ def gradient_descent(gradient, start, learn_rate, n_iter, tolerance):
     return steps
 
 xsteps = gradient_descent(
-    gradient=lambda x: 2 * x, # derivative of function f(x) = x^2 to minimize
+    gradient=lambda x: 2*x, # 2x derivative of f(x) = x^2 to minimize
     start=10.0,
     learn_rate=0.2,
     n_iter=50,
     tolerance=1e-06
 )
+
+xsteps
 
 '{:.10f}'.format(xsteps[-1]) # numeric solution very close to zero
 s = np.array(xsteps)
@@ -155,9 +158,29 @@ plt.show()
 ############################################################
 lsteps = gradient_descent(
     gradient=lambda x: 4 * x**3 - 10 * x - 3,  # f(x) = x^4 - 5x^2 - 3x
+    start=0,        # algorithm trapped in local min:
+    learn_rate=0.2, # learning rate or starting point make the difference between finding a local minimum and finding the global minimum
+    n_iter=50,
+    tolerance=1e-06
+)
+
+'{:.10f}'.format(lsteps[-1])
+y = np.array(lsteps)
+x = np.linspace(-3, 3)
+
+fig, ax = plt.subplots()
+ax.plot(x, x**4 - 5*x**2 - 3*x, linewidth=2)
+ax.plot(y, y**4 - 5*y**2 - 3*y, '--bo')
+ax.set_xlabel('x')
+ax.set_ylabel('f(x)')
+plt.show()
+
+
+lsteps = gradient_descent(
+    gradient=lambda x: 4 * x**3 - 10 * x - 3,  # f(x) = x^4 - 5x^2 - 3x
     start=0,
-    learn_rate=0.2,
-    n_iter=50, # more iter => slower convergence but higher accuracy
+    learn_rate=0.1, # get global minimum
+    n_iter=50,
     tolerance=1e-06
 )
 
