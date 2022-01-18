@@ -1,5 +1,3 @@
-import io
-import requests
 import pandas as pd
 import numpy as np
 import statsmodels.api as sm
@@ -21,6 +19,7 @@ data.describe()
 
 data.hist('Ozone', figsize=(12,8), color='red', bins = 20)
 data.hist(figsize=(10,10), color='red') # all vars
+p.show()
 
 ###################################################################
 ##########################   ols code    ##########################
