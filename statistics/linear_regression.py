@@ -2,15 +2,10 @@ import io
 import requests
 import pandas as pd
 import numpy as np
-import scipy.stats
-from sklearn.linear_model import LinearRegression
 import statsmodels.api as sm
 import matplotlib.pyplot as p
+from sklearn.linear_model import LinearRegression
 
-
-download_url = "https://raw.githubusercontent.com/rpalloni/dataset/master/airquality.csv"
-response = requests.get(download_url)
-# data = pd.read_csv(io.BytesIO(response.content), dtype={'Ozone': float,'SolarRay':float, 'Wind':float, 'Temp':float, 'Month':float, 'Day':float})
 data = pd.read_csv("https://raw.githubusercontent.com/rpalloni/dataset/master/airquality.csv", 
             dtype={'Ozone': float,'SolarRay':float, 'Wind':float, 'Temp':float, 'Month':float, 'Day':float})
 data.head()
@@ -31,21 +26,18 @@ data.hist(figsize=(10,10), color='red') # all vars
 ##########################   ols code    ##########################
 ###################################################################
 ozone = data[['Ozone']].values
-solar = data[['SolarRay']].values
-solar
-solar.shape
+wind = data[['Wind']].values
+temp = data[['Temp']].values
+wind
+wind.shape
 int = np.ones([data.shape[0], 1]) # create a array containing only ones
 int
 int.shape
-X = np.concatenate([int,solar], axis=1)
+X = np.concatenate([int, wind, temp], axis=1)
 # X = np.hstack(int, solar)
 
 np.dot(X.T,X) # https://en.wikipedia.org/wiki/Dot_product
-
-np.dot(X.T,X)[0,0]
-np.dot(X.T,X)[0,1]
-np.dot(X.T,X)[1,0]
-np.dot(X.T,X)[1,1]
+# np.dot(X.T,X)[0,0]
 
 inverse = np.linalg.inv(np.dot(X.T,X)) # (X'X)^-1
 inverse
@@ -53,29 +45,6 @@ np.dot(X.T,ozone) # X'y
 
 b = np.dot(inverse, np.dot(X.T,ozone)) # b = (X'X)^-1 * X'y
 b # regression coef
-
-
-###################################################################
-########################   scipy.stats    #########################
-###################################################################
-result = scipy.stats.linregress(data['SolarRay'], data['Ozone'])
-
-result.slope
-result.intercept
-result.rvalue
-result.pvalue # https://www.statsdirect.com/help/basics/p_values.htm
-result.stderr
-
-# scatterplot
-line = f'Regression line: y={result.intercept:.2f}+{result.slope:.2f}x, r={result.rvalue:.2f}'
-
-fig, ax = p.subplots()
-ax.plot(data['SolarRay'], data['Ozone'], linewidth=0, marker='s', label='Data points')
-ax.plot(data['SolarRay'], result.intercept + result.slope * data['SolarRay'], label=line)
-ax.set_xlabel('solar')
-ax.set_ylabel('ozone')
-ax.legend(facecolor='white')
-p.show()
 
 ###################################################################
 ########################   statsmodels    #########################
@@ -91,8 +60,8 @@ res.rsquared
 res.params
 res.fittedvalues
 
-# x1 x2 x3
-predictors = data[['SolarRay', 'Wind', 'Temp']].values
+# multi
+predictors = data[['Wind', 'Temp']].values
 predictors = sm.add_constant(predictors) # add intercept
 predictors
 
@@ -127,8 +96,8 @@ coeff_df = pd.DataFrame(model3.coef_, data[['SolarRay']].columns, columns=['Coef
 coeff_df
 
 # multi
-predictors = data[['SolarRay', 'Wind', 'Temp']].values
+predictors = data[['Wind', 'Temp']].values
 model4 = LinearRegression()
-model4.fit(ozone, predictors)
-coeff_df = pd.DataFrame(model4.coef_, data[['SolarRay', 'Wind', 'Temp']].columns, columns=['Coefficient'])
+model4.fit(predictors, ozone)
+coeff_df = pd.DataFrame(model4.coef_[0], data[['Wind', 'Temp']].columns, columns=['Coefficient'])
 coeff_df
