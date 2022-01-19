@@ -100,3 +100,68 @@ model4 = LinearRegression()
 model4.fit(predictors, ozone)
 coeff_df = pd.DataFrame(model4.coef_[0], data[['Wind', 'Temp']].columns, columns=['Coefficient'])
 coeff_df
+
+
+###################################################################
+##########################   gradient    ##########################
+###################################################################
+
+X = data[['Wind', 'Temp']].to_numpy()
+y = data['Ozone'].to_numpy()
+
+ss = StandardScaler()
+X = ss.fit_transform(X)
+
+lr = LinearRegression()
+lr.fit(X, y)
+lr.intercept_
+lr.coef_
+
+
+
+def predicted_y(weights, X, intercept):
+    y_lst = []
+    for i in range(len(X)):
+        y_lst.append(weights@X[i]+intercept)
+    return np.array(y_lst)
+
+# linear loss
+def loss(y, y_predicted):
+    n = len(y)
+    s = 0
+    for i in range(n):
+        s += (y[i]-y_predicted[i])**2
+    return (1/n)*s
+
+# derivative of loss on features
+def dldw(x, y, y_predicted):
+    n = len(y)
+    s = 0
+    for i in range(n):
+        s += -(y[i]-y_predicted[i])*x[i]
+    return (2/n)*s
+
+# derivative of loss on intercept (bias)
+def dldb(y, y_predicted):
+    n = len(y)
+    s = 0
+    for i in range(len(y)):
+        s += -(y[i]-y_predicted[i])
+    return (2/n)*s
+
+# gradient function
+def gradient_descent(X, y, learn_rate=0.001, n_iter=3000):
+    weights_vector = np.zeros(X.shape[1])
+    intercept = 0
+
+    for i in range(n_iter):
+        y_predicted = predicted_y(weights_vector, X, intercept)
+        weights_vector = weights_vector - learn_rate * dldw(X, y, y_predicted)
+        intercept = intercept - learn_rate * dldb(y, y_predicted)
+
+    return weights_vector, intercept
+
+w, b = gradient_descent(X, y)
+
+print("weights:", w)
+print("intercept:", b)
