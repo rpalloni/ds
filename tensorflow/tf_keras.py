@@ -129,7 +129,12 @@ units = kernels = weights matrix
 model = Sequential() # create the model passing a list of layer instances to the constructor
 
 # Add an input layer
-model.add(Dense(12, activation='relu', input_shape=(11,), use_bias=True)) # activation functions: relu, tanh, sigmoid
+model.add(Dense(12,
+                activation='relu', # activation functions: relu, tanh, sigmoid
+                input_shape=(11,), # neurons (columns)
+                kernel_initializer='ones', # initialize columns weights to one
+                bias_initializer='zero', # initializer error to zero
+                use_bias=True))
 model.output_shape
 model.summary()
 
@@ -147,7 +152,7 @@ model.get_weights()
 
 
 # Apply the model to data
-model.compile(loss='binary_crossentropy', # loss functions: mean_squared_error, binary_crossentropy, categorical_crossentropy
+model.compile(loss='binary_crossentropy', # loss functions: mean_squared_error, binary_crossentropy (log loss), categorical_crossentropy
               optimizer='adam', # optimization algorithms: Stochastic Gradient Descent (SGD), ADAM and RMSprop
               metrics=['accuracy']) # monitor the accuracy during the training
 
