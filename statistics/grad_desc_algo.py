@@ -194,3 +194,58 @@ ax.plot(y, y**4 - 5*y**2 - 3*y, '--bo')
 ax.set_xlabel('x')
 ax.set_ylabel('f(x)')
 plt.show()
+
+
+
+############################################################
+####################### ols gradient #######################
+############################################################
+
+def predicted_y(weights, X, intercept):
+    y_pred = []
+    for i in range(len(X)):
+        y_pred.append(weights@X[i]+intercept)
+    return np.array(y_pred)
+
+# linear loss
+def loss(y, y_predicted):
+    s = 0
+    n = len(y)
+    for i in range(n):
+        s += (1/n) * (y[i]-y_predicted[i])**2
+    return s
+
+# derivative of loss on weights
+def dldw(X, y, y_predicted):
+    s = 0
+    n = len(y)
+    for i in range(n):
+        s += (2/n) * -X[i] * (y[i] - y_predicted[i])
+    return s
+
+# derivative of loss on intercept (bias)
+def dldb(y, y_predicted):
+    s = 0
+    n = len(y)
+    for i in range(len(y)):
+        s += (2/n) * -(y[i] - y_predicted[i])
+    return s
+
+# gradient function
+def gradient_descent(X, y, learn_rate=0.001, n_iter=2000):
+    weights_vector = [0, 0]
+    intercept = 0
+    linear_loss = []
+
+    for i in range(n_iter):
+        y_predicted = predicted_y(weights_vector, X, intercept)
+        weights_vector = weights_vector - learn_rate * dldw(X, y, y_predicted)
+        intercept = intercept - learn_rate * dldb(y, y_predicted)
+        linear_loss.append(loss(y, y_predicted))
+
+    plt.plot(np.arange(1, n_iter), linear_loss[1:])
+    plt.xlabel("number of epoch")
+    plt.ylabel("loss")
+    plt.show()
+
+    return weights_vector, intercept
