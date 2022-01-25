@@ -29,13 +29,13 @@ Activation functions are simply a function that is applied to the weighed sum of
 
 A list of some common activation functions and their graphs can be seen below.
 
-- Relu (Rectified Linear Unit)
+- Relu (Rectified Linear Unit) => y > 0
 
 ![alt text](https://yashuseth.files.wordpress.com/2018/02/relu-function.png?w=309&h=274)
-- Tanh (Hyperbolic Tangent)
+- Tanh (Hyperbolic Tangent) => -1 < y < 1
 
 ![alt text](http://mathworld.wolfram.com/images/interactive/TanhReal.gif)
-- Sigmoid 
+- Sigmoid  => 0 < y < 1
 
 ![alt text](https://miro.medium.com/max/970/1*Xu7B5y9gp0iL5ooBj7LtWw.png)
 
