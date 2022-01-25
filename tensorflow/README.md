@@ -5,7 +5,7 @@ Docs: https://www.tensorflow.org/api_docs/python/tf/
 
 On a lower level neural networks are simply a combination of elementry math operations and some more advanced linear algebra. Each neural network consists of a sequence of layers in which data passes through. These layers are made up on neurons and the neurons of one layer are connected to the next. These connections are defined by some numeric values called weights. Each layer also has something called a bias, this is simply an extra neuron that has no connections and holds a single numeric value. Data starts at the input layer and is transformed as it passes through subsequent layers. The data at each subsequent neuron is defined as the following.
 
-```math
+```
 a^2+b^2=c^2
 ```
 
