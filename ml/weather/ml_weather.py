@@ -17,12 +17,8 @@ from sklearn import metrics
 
 pd.options.display.max_columns = None
 
-
-loc_df = pd.read_csv('stations.csv')
-loc_df.head()
-
 # data: https://www.kaggle.com/smid80/weatherww2
-df = pd.read_csv('operations.csv') # STA: Weather Station
+df = pd.read_csv("https://raw.githubusercontent.com/rpalloni/dataset/master/operations.csv") # STA: Weather Station code
 
 df.shape
 df.head()
