@@ -198,54 +198,114 @@ plt.show()
 
 
 ############################################################
-####################### ols gradient #######################
+##################### gradient matrix ######################
 ############################################################
 
-def predicted_y(weights, X, intercept):
+def mse_loss(weights, X, Y):
+    n = Y.shape[0]
+    residuals = np.dot(X, weights) - Y              # e = yp - y
+    squared_error = np.dot(residuals.T, residuals)  # s = e'e
+    return residuals, (1/n) * squared_error         # mse = 1/n * s
+
+
+def gradient_descent(X, Y, iterations=100, learn_rate=0.01):
+    n = X.shape[0] # obs
+    m = X.shape[1] # cols
+    weights = np.zeros((m, 1)) # mx1
+    losses = []
+
+    for i in range(iterations):
+        residuals, loss = mse_loss(weights, X, Y)   # nx1
+        gradient = (2/n) * np.dot(residuals.T, X).T # mx1 (1xn x nxm)'
+        weights = weights - (learn_rate * gradient) # mx1 (mx1 - mx1)
+        losses.append(loss)
+        # print(f"Iter: {i} | Cost: {loss} | Weights: {weights}")
+
+    return weights
+
+
+# data
+y = np.array([[31, 28, 29, 31, 23, 27, 30, 24, 32, 31, 24, 33, 33, 35, 37, 31, 27, 34, 39, 25]]).T
+y
+
+X = np.array([(90, 178), (72, 180), (48, 161), (90, 176), (48, 164), (76, 190), (62, 175), (52, 161), (93, 190), (72, 164),
+              (70, 178), (60, 167), (61, 178), (73, 180), (70, 185), (89, 178), (68, 174), (72, 173), (85, 184), (76, 168)])
+X = np.insert(X, 0, 1, axis=1)
+X
+
+gradient_descent(X, y, 500, 0.00001)
+
+
+# check ols
+inv = np.linalg.inv(np.dot(X.T, X)) # (X'X)^-1
+xy = np.dot(X.T, y) # X'y
+
+b = np.dot(inv, xy)
+b # b = (X'X)^-1 * X'y
+
+
+############################################################
+##################### gradient loops #######################
+############################################################
+
+def predicted_y(weights, X):
     y_pred = []
-    for i in range(len(X)):
-        y_pred.append(weights@X[i]+intercept)
-    return np.array(y_pred)
+    n = X.shape[0] # obs
+    m = X.shape[1] # cols
+    for i in range(n):
+        y_pred.append(np.dot(X[i], weights.reshape(m, 1))) # 1xm x mx1
+    return y_pred
+    # return np.dot(X, weights)
 
 # linear loss
 def loss(y, y_predicted):
     s = 0
-    n = len(y)
+    n = X.shape[0] # obs
     for i in range(n):
-        s += (1/n) * (y[i]-y_predicted[i])**2
-    return s
+        s += (y[i]-y_predicted[i])**2
+    return (1/n) * s
 
 # derivative of loss on weights
 def dldw(X, y, y_predicted):
     s = 0
-    n = len(y)
+    n = X.shape[0] # obs
     for i in range(n):
-        s += (2/n) * -X[i] * (y[i] - y_predicted[i])
-    return s
-
-# derivative of loss on intercept (bias)
-def dldb(y, y_predicted):
-    s = 0
-    n = len(y)
-    for i in range(len(y)):
-        s += (2/n) * -(y[i] - y_predicted[i])
-    return s
+        s += -X[i] * (y[i] - y_predicted[i])
+    return (2/n) * s
 
 # gradient function
-def gradient_descent(X, y, learn_rate=0.001, n_iter=2000):
-    weights_vector = [0, 0]
-    intercept = 0
+def gradient_descent(X, y, learn_rate, n_iter):
+    m = X.shape[1] # cols
+    weights_vector = np.zeros(m) # np.zeros((m, 1))
     linear_loss = []
 
     for i in range(n_iter):
-        y_predicted = predicted_y(weights_vector, X, intercept)
+        y_predicted = predicted_y(weights_vector, X)
         weights_vector = weights_vector - learn_rate * dldw(X, y, y_predicted)
-        intercept = intercept - learn_rate * dldb(y, y_predicted)
         linear_loss.append(loss(y, y_predicted))
 
-    plt.plot(np.arange(1, n_iter), linear_loss[1:])
+    plt.plot(np.arange(1, n_iter+1), linear_loss[0:])
     plt.xlabel("number of epoch")
     plt.ylabel("loss")
     plt.show()
 
-    return weights_vector, intercept
+    return weights_vector
+
+
+# data
+y = np.array([[31, 28, 29, 31, 23, 27, 30, 24, 32, 31, 24, 33, 33, 35, 37, 31, 27, 34, 39, 25]]).T
+y
+
+X = np.array([(90, 178), (72, 180), (48, 161), (90, 176), (48, 164), (76, 190), (62, 175), (52, 161), (93, 190), (72, 164),
+              (70, 178), (60, 167), (61, 178), (73, 180), (70, 185), (89, 178), (68, 174), (72, 173), (85, 184), (76, 168)])
+X = np.insert(X, 0, 1, axis=1)
+X
+
+gradient_descent(X, y, learn_rate=0.00001, n_iter=5)
+
+# check ols
+inv = np.linalg.inv(np.dot(X.T, X)) # (X'X)^-1
+xy = np.dot(X.T, y) # X'y
+
+b = np.dot(inv, xy)
+b # b = (X'X)^-1 * X'y
