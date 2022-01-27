@@ -107,62 +107,32 @@ coeff_df
 ##########################   gradient    ##########################
 ###################################################################
 
-X = data[['Wind', 'Temp']].to_numpy()
-y = data['Ozone'].to_numpy()
+X = np.array(data[['Wind', 'Temp']])
+X = np.insert(X, 0, 1, axis=1) # add intercept
+X
 
-ss = StandardScaler()
-X = ss.fit_transform(X)
+y = np.array([data['Ozone']]).T
+y
 
-lr = LinearRegression()
-lr.fit(X, y)
-lr.intercept_
-lr.coef_
+def mse_loss(weights, X, Y):
+    n = Y.shape[0]
+    residuals = np.dot(X, weights) - Y              # e = yp - y
+    squared_error = np.dot(residuals.T, residuals)  # s = e'e
+    return residuals, (1/n) * squared_error         # mse = 1/n * s
 
+def gradient_descent(X, Y, iterations=100, learn_rate=0.01):
+    n = X.shape[0] # obs
+    m = X.shape[1] # cols
+    weights = np.zeros((m, 1)) # mx1
+    losses = []
 
+    for i in range(iterations):
+        residuals, loss = mse_loss(weights, X, Y)   # nx1
+        gradient = (2/n) * np.dot(residuals.T, X).T # mx1 (1xn x nxm)'
+        weights = weights - (learn_rate * gradient) # mx1 (mx1 - mx1)
+        losses.append(loss)
+        # print(f"Iter: {i} | Cost: {loss} | Weights: {weights}")
 
-def predicted_y(weights, X, intercept):
-    y_lst = []
-    for i in range(len(X)):
-        y_lst.append(weights@X[i]+intercept)
-    return np.array(y_lst)
+    return weights
 
-# linear loss
-def loss(y, y_predicted):
-    n = len(y)
-    s = 0
-    for i in range(n):
-        s += (y[i]-y_predicted[i])**2
-    return (1/n)*s
-
-# derivative of loss on features
-def dldw(x, y, y_predicted):
-    n = len(y)
-    s = 0
-    for i in range(n):
-        s += -(y[i]-y_predicted[i])*x[i]
-    return (2/n)*s
-
-# derivative of loss on intercept (bias)
-def dldb(y, y_predicted):
-    n = len(y)
-    s = 0
-    for i in range(len(y)):
-        s += -(y[i]-y_predicted[i])
-    return (2/n)*s
-
-# gradient function
-def gradient_descent(X, y, learn_rate=0.001, n_iter=3000):
-    weights_vector = np.zeros(X.shape[1])
-    intercept = 0
-
-    for i in range(n_iter):
-        y_predicted = predicted_y(weights_vector, X, intercept)
-        weights_vector = weights_vector - learn_rate * dldw(X, y, y_predicted)
-        intercept = intercept - learn_rate * dldb(y, y_predicted)
-
-    return weights_vector, intercept
-
-w, b = gradient_descent(X, y)
-
-print("weights:", w)
-print("intercept:", b)
+gradient_descent(X, y, 5000, 0.00001)
