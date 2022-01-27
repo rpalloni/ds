@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
 
 # basic gradient descendent
@@ -194,7 +193,6 @@ ax.plot(y, y**4 - 5*y**2 - 3*y, '--bo')
 ax.set_xlabel('x')
 ax.set_ylabel('f(x)')
 plt.show()
-
 
 
 ############################################################

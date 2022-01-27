@@ -2,10 +2,9 @@ import pandas as pd
 import numpy as np
 import statsmodels.api as sm
 import matplotlib.pyplot as p
-from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression
 
-data = pd.read_csv("https://raw.githubusercontent.com/rpalloni/dataset/master/airquality.csv", 
+data = pd.read_csv("https://raw.githubusercontent.com/rpalloni/dataset/master/airquality.csv",
             dtype={'Ozone': float,'SolarRay':float, 'Wind':float, 'Temp':float, 'Month':float, 'Day':float})
 data.head()
 data.shape
