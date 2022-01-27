@@ -13,8 +13,8 @@ from sklearn.ensemble import GradientBoostingRegressor
 # bf_test = pd.read_csv("https://raw.githubusercontent.com/rpalloni/dataset/master/black-friday/test.csv")
 bf_train = pd.read_csv("https://raw.githubusercontent.com/rpalloni/dataset/master/black-friday/train.csv")
 
-bf_test.head(20)
-bf_test.shape
+# bf_test.head(20)
+# bf_test.shape
 
 bf_train.head(20)
 bf_train.shape
