@@ -14,10 +14,49 @@ help(np.mean)
 # Create a matrix by passing the numpy array function a list of lists.
 # Each inner list will be taken to be one row of the matrix.
 
-vector = np.array([1, 2, 3])
-vector
-print(vector)
-len(vector)
+x = [1, 2, 3]
+y = [4, 6, 8]
+
+# 1D array
+a = np.array(x)
+a.shape
+a
+
+# 2D array
+b = np.array([x])
+b.shape
+b # two square brachets
+
+c = np.array(x, ndmin=2)
+c.shape
+c
+
+d = np.array([x]).T
+d.shape
+d
+
+e = np.array(x)[:, None]
+e.shape
+
+# explicit shape
+f = np.array(x).reshape(1, 3)
+f.shape
+f
+
+g = np.array(y).reshape(3, 1)
+g.shape
+g
+
+g-f # pair difference
+
+g*f # pair product
+
+np.dot(g, f) # matrix
+
+f*g
+
+np.dot(f, g) # scalar
+
 
 mat3x2 = np.array([[1, 2], [3, 4], [5, 6]])
 print(mat3x2)
