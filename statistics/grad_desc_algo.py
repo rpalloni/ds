@@ -231,7 +231,9 @@ X = np.array([(90, 178), (72, 180), (48, 161), (90, 176), (48, 164), (76, 190), 
 X = np.insert(X, 0, 1, axis=1)
 X
 
-gradient_descent(X, y, 500, 0.00001)
+w = gradient_descent(X, y, 500, 0.00001)
+w[1]
+w[2]
 
 
 # check ols
@@ -241,6 +243,20 @@ xy = np.dot(X.T, y) # X'y
 b = np.dot(inv, xy)
 b # b = (X'X)^-1 * X'y
 
+
+# plot
+ax = plt.axes(projection='3d')
+p = ax.scatter(X[:, 1], X[:, 2], y, alpha=0.8)
+ax.set_xlabel('x1')
+ax.set_ylabel('x2')
+ax.set_zlabel('y')
+# surface data
+x1s = np.arange(np.min(X[:, 1]), np.max(X[:, 1]), 1)
+x2s = np.arange(np.min(X[:, 2]), np.max(X[:, 2]), 1)
+x1s, x2s = np.meshgrid(x1s, x2s)
+ys = w[0] + w[1]*x1s + w[2]*x2s
+ax.plot_surface(x1s, x2s, ys, alpha=0.4, color='red') # surface
+plt.show()
 
 ############################################################
 ##################### gradient loops #######################

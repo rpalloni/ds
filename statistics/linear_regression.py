@@ -1,11 +1,11 @@
 import pandas as pd
 import numpy as np
 import statsmodels.api as sm
-import matplotlib.pyplot as p
+import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 
 data = pd.read_csv("https://raw.githubusercontent.com/rpalloni/dataset/master/airquality.csv",
-            dtype={'Ozone': float,'SolarRay':float, 'Wind':float, 'Temp':float, 'Month':float, 'Day':float})
+                   dtype={'Ozone': float, 'SolarRay': float, 'Wind': float, 'Temp': float, 'Month': float, 'Day': float})
 data.head()
 data.shape
 
@@ -17,9 +17,9 @@ data = data.dropna()
 
 data.describe()
 
-data.hist('Ozone', figsize=(12,8), color='red', bins = 20)
-data.hist(figsize=(10,10), color='red') # all vars
-p.show()
+data.hist('Ozone', figsize=(12, 8), color='red', bins=20)
+data.hist(figsize=(10, 10), color='red') # all vars
+plt.show()
 
 ###################################################################
 ##########################   ols code    ##########################
@@ -35,15 +35,40 @@ int.shape
 X = np.concatenate([int, wind, temp], axis=1)
 # X = np.hstack(int, solar)
 
-np.dot(X.T,X) # https://en.wikipedia.org/wiki/Dot_product
+np.dot(X.T, X) # https://en.wikipedia.org/wiki/Dot_product
 # np.dot(X.T,X)[0,0]
 
-inverse = np.linalg.inv(np.dot(X.T,X)) # (X'X)^-1
+inverse = np.linalg.inv(np.dot(X.T, X)) # (X'X)^-1
 inverse
-np.dot(X.T,ozone) # X'y
+np.dot(X.T, ozone) # X'y
 
-b = np.dot(inverse, np.dot(X.T,ozone)) # b = (X'X)^-1 * X'y
+b = np.dot(inverse, np.dot(X.T, ozone)) # b = (X'X)^-1 * X'y
 b # regression coef
+
+# scatter 2D
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4))
+ax1.scatter(x=wind, y=ozone)
+ax1.set_xlabel('Wind speed (mph)')
+ax1.set_ylabel('Ozone (ppb)')
+ax2.scatter(x=temp, y=ozone)
+ax2.set_xlabel('Max Temp (F°)')
+ax2.set_ylabel('Ozone (ppb)')
+plt.show()
+
+
+# surface data
+x1s = np.arange(np.min(X[:, 1]), np.max(X[:, 1]), 1)
+x2s = np.arange(np.min(X[:, 2]), np.max(X[:, 2]), 1)
+x1s, x2s = np.meshgrid(x1s, x2s)
+ys = b[0] + b[1]*x1s + b[2]*x2s
+
+ax = plt.axes(projection='3d')
+plot = ax.scatter(X[:, 1], X[:, 2], ozone, alpha=0.8)
+ax.set_xlabel('Wind speed (mph)')
+ax.set_ylabel('Max Temp (F°)')
+ax.set_zlabel('Ozone (ppb)')
+ax.plot_surface(x1s, x2s, ys, alpha=0.2, color='red') # surface
+plt.show()
 
 ###################################################################
 ########################   statsmodels    #########################
@@ -82,7 +107,7 @@ solar = data[['SolarRay']].values
 
 print(ozone) # vector
 
-p.scatter(ozone, solar)
+plt.scatter(ozone, solar)
 
 model3.fit(solar, ozone)
 model3.score(solar, ozone) # r2

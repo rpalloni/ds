@@ -1,7 +1,6 @@
 # GQL is for consuming GraphQL APIs
 # Graphene is for building GraphQL APIs
 
-import pytz # timezone
 import pandas as pd
 from gql import gql, Client
 from gql.transport.requests import RequestsHTTPTransport
@@ -13,7 +12,7 @@ headers = {'Authorization': 'token ' + token} # set token
 client = Client(transport=RequestsHTTPTransport(url='https://api.github.com/graphql', headers=headers))
 
 gql_query_repos = gql(
-"""
+    """
 {
   viewer {
     repositories(first: 30) {
