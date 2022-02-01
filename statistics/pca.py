@@ -8,7 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # two vars and ten samples
-X = np.array([(10, 21), (11, 23), (8, 25), (13, 20), (9, 19), (5, 9), (2, 7), (1, 5), (3, 6), (4, 8)])
+X = np.array([(10, 21), (11, 23), (8, 25), (13, 20), (9, 19), (5, 9), (2, 7), (1, 5), (3, 6), (4, 8)], dtype=float)
 X
 
 plt.scatter(X[:, 0], X[:, 1])
@@ -30,3 +30,14 @@ plt.show()
 
 
 # shift center of data to origin (scale)
+X[:, 0] = X[:, 0] - mu1
+X[:, 1] = X[:, 1] - mu2
+
+mu1, mu2 = np.mean(X, axis=0)
+d = 0.5
+
+plt.scatter(X[:, 0], X[:, 1])
+plt.title('X in origin')
+plt.axis([min(X[:, 0])-d, max(X[:, 0])+d, min(X[:, 1])-d, max(X[:, 1])+d])
+plt.annotate('X', xy=(mu1, mu2), weight='bold') # center of data
+plt.show()
