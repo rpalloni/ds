@@ -29,15 +29,19 @@ plt.annotate('X', xy=(mu1, mu2), weight='bold') # center of data
 plt.show()
 
 
-# shift center of data to origin (scale)
+# shift center of data to origin (scale) and add PCA line
 X[:, 0] = X[:, 0] - mu1
 X[:, 1] = X[:, 1] - mu2
 
 mu1, mu2 = np.mean(X, axis=0)
 d = 0.5
 
+pcax = np.linspace(min(X[:, 0]), max(X[:, 0]), len(X))
+pcay = np.linspace(min(X[:, 1]), max(X[:, 1]), len(X))
+
 plt.scatter(X[:, 0], X[:, 1])
 plt.title('X in origin')
 plt.axis([min(X[:, 0])-d, max(X[:, 0])+d, min(X[:, 1])-d, max(X[:, 1])+d])
 plt.annotate('X', xy=(mu1, mu2), weight='bold') # center of data
+plt.plot(pcax, pcay)
 plt.show()
