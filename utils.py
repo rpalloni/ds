@@ -58,6 +58,22 @@ f*g
 np.dot(f, g) # scalar
 
 
+# dot vs inner
+r = np.array(x)
+s = np.array(y)
+
+np.dot(r, s)
+np.inner(r, s) # no difference with 1D array
+
+p = np.array([[1, 2], [3, 4]])
+q = np.array([[5, 3], [1, 6]])
+# difference with matrix
+np.dot(p, q) # (7 = 1*5 + 2*1)
+np.inner(p, q) # (11 = 1*5 + 2*3)
+
+np.dot(a, b) == np.inner(a, b.T)
+
+
 mat3x2 = np.array([[1, 2], [3, 4], [5, 6]])
 print(mat3x2)
 
@@ -87,7 +103,7 @@ dt = np.loadtxt('data.txt', delimiter=',') # mixed data types not supported
 dt
 
 # export
-np.savetxt('data/array.txt', s, fmt='%i')    
+np.savetxt('data/array.txt', s, fmt='%i')
 # fmt='%i' integer
 # fmt='%10.5f' float rounded to five decimals
 
@@ -144,4 +160,3 @@ pv.to_excel(ExcelObject, sheet_name='pivoted', merge_cells=False) # repeat dimen
 cr.to_excel(ExcelObject, sheet_name='crossed')
 sr.to_excel(ExcelObject, sheet_name='sorted')
 ExcelObject.save()
-
