@@ -6,7 +6,7 @@ Singular Value Decomposition: find eigenvalues and eigenvectors of features
 
 import numpy as np
 import matplotlib.pyplot as plt
-from numpy.linalg import eig
+from numpy.linalg import eig, svd
 
 # two vars and ten samples
 X = np.array([(14, 8), (22, 12), (17, 10), (19, 7), (21, 9), (9, 5), (10, 3), (6, 1), (4, 3), (12, 4)], dtype=float)
@@ -101,7 +101,24 @@ plt.grid(alpha=0.2)
 plt.show()
 
 
-# TODO: eigenvalues (2): sum of the squared distances between projected points and origin for each PCA
+# eigenvalues: sum of the squared distances between projected points and origin for each PCA
+v = np.array([1, m[0][0]]).reshape(2, 1)
+
+def get_projection(v1, v2=v):
+    return v2 * (np.dot(v1.T, v2) / np.dot(v2.T, v2))
+
+eigenvalue_pc1 = 0
+for i in range(len(X)):
+    v1 = np.array([X1[i][0], X2[i][0]]).reshape(2, 1)
+    proj = get_projection(v1)
+    eigenvalue_pc1 += np.sqrt(proj[0]**2 + proj[1]**2)
+    plt.scatter(proj[0], proj[1], color='r') # projections
+plt.scatter(X1, X2, color='b') # data
+plt.plot(X1, X1*m, '-', color='g') # regression line
+plt.grid(alpha=0.2)
+plt.show()
+
+eigenvalue_pc1
 
 
 #################################################
@@ -157,3 +174,13 @@ plt.grid(alpha=0.2)
 plt.axhline(y=0, c='g')
 plt.axvline(x=0, c='m')
 plt.show()
+
+
+# svd
+centered_data = X - np.mean(X, axis=0)
+U, val, vec = svd(centered_data, full_matrices=False)
+U
+val
+vec
+coefficients = np.dot(U, np.diag(val))
+coefficients

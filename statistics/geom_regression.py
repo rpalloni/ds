@@ -40,6 +40,7 @@ pv = np.array([1, m[0][0]]).reshape(2, 1) # y = x*m
 
 # coordinates of points orthogonal projections on regression line
 def get_projection(v1, v2=pv):
+    # same as (np.dot(v1.T, v2) / np.dot(v2.T, v2)) * v2
     inv = np.linalg.inv(np.dot(v2.T, v2))
     xy = np.dot(v2.T, v1)
     b = np.dot(inv, xy)
