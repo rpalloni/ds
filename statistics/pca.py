@@ -6,10 +6,10 @@ Singular Value Decomposition: find eigenvalues and eigenvectors of features
 
 import numpy as np
 import matplotlib.pyplot as plt
-from numpy.linalg import eig, svd
+from numpy.linalg import eig, svd, norm
 
-# two vars and ten samples
-X = np.array([(14, 8), (22, 12), (17, 10), (19, 7), (21, 9), (9, 5), (10, 3), (6, 1), (4, 3), (12, 4)], dtype=float)
+# two vars and ten samples2020
+X = np.array([[14, 8], [22, 12], [17, 10], [19, 7], [21, 9], [9, 5], [10, 3], [6, 1], [4, 3], [12, 4]], dtype=float)
 
 plt.scatter(X[:, 0], X[:, 1])
 plt.show()
@@ -32,11 +32,11 @@ plt.ylabel('X2')
 plt.show()
 
 
-# shift center of data to origin (scale) and add PCA line
+# shift center of data to origin (scale) and add PC line
 X1 = (X[:, 0] - mu1).reshape(10, 1)
 X2 = (X[:, 1] - mu2).reshape(10, 1)
 
-# calculate regression line
+# calculate PC line
 inv = np.linalg.inv(np.dot(X1.T, X1)) # (X'X)^-1
 xy = np.dot(X1.T, X2) # X'y
 m = np.dot(inv, xy) # b = (X'X)^-1 * X'y
@@ -66,11 +66,11 @@ plt.grid(alpha=0.2)
 plt.show()
 
 
-# PC1 loading scores of each var (scaled => i=1)
+# PC1 loading scores (scaled => i=1)
 ls_pc1_x1 = c1/i
 ls_pc1_x2 = c2/i
 
-# eigenvector (singular vector): 1 unit logn vector (i)
+# eigenvector (singular vector): 1 unit long vector (i)
 np.sqrt((ls_pc1_x1)**2 + (ls_pc1_x2)**2)
 
 eigenvector_pc1 = [ls_pc1_x1, ls_pc1_x2]
@@ -101,28 +101,51 @@ plt.grid(alpha=0.2)
 plt.show()
 
 
-# eigenvalues: sum of the squared distances between projected points and origin for each PCA
-v = np.array([1, m[0][0]]).reshape(2, 1)
+# eigenvalues: sum of the squared distances between projected points and origin for each PC
+v_pc1 = np.array([1, m[0][0]]).reshape(2, 1) # a vector on PC1 line
+v_pc2 = np.array([1, -(1/m[0][0])]).reshape(2, 1) # a vector on PC2 line
 
-def get_projection(v1, v2=v):
-    return v2 * (np.dot(v1.T, v2) / np.dot(v2.T, v2))
+i_pc1 = np.sqrt(v_pc1[0]**2 + v_pc1[1]**2)
+i_pc2 = np.sqrt(v_pc2[0]**2 + v_pc2[1]**2)
+
+u_pc1 = v_pc1/i_pc1 # rescale to unit vector
+# np.dot(u_pc1.T, u_pc1) # check 1
+u_pc2 = v_pc2/i_pc2
+
+def get_projection(p, v):
+    return np.dot(p.T, v) / np.dot(v.T, v)
 
 eigenvalue_pc1 = 0
+eigenvalue_pc2 = 0
 for i in range(len(X)):
-    v1 = np.array([X1[i][0], X2[i][0]]).reshape(2, 1)
-    proj = get_projection(v1)
-    eigenvalue_pc1 += np.sqrt(proj[0]**2 + proj[1]**2)
-    plt.scatter(proj[0], proj[1], color='r') # projections
-plt.scatter(X1, X2, color='b') # data
-plt.plot(X1, X1*m, '-', color='g') # regression line
-plt.grid(alpha=0.2)
-plt.show()
+    p = np.array([X1[i][0], X2[i][0]]).reshape(2, 1)
+    proj_pc1 = get_projection(p, u_pc1)
+    proj_pc2 = get_projection(p, u_pc2)
+    eigenvalue_pc1 += proj_pc1**2
+    eigenvalue_pc2 += proj_pc2**2
 
-eigenvalue_pc1
+eigenvalue_pc1, eigenvalue_pc2
 
+eigenvalue_pc1 / (len(X) - 1) # PC variation
+
+# PC1_VAR / (PC1_VAR + PC2_VAR) => PC1 % on total variation
+(eigenvalue_pc1 / (len(X) - 1)) / ((eigenvalue_pc1 / (len(X) - 1)) + (eigenvalue_pc2 / (len(X) - 1))) # PC1 96% tot var
+
+# eig svd check
+centered_data = X - np.mean(X, axis=0)
+eval, evec = eig(np.dot(centered_data.T, centered_data))
+eval
+evec
+
+U, val, vec = svd(centered_data, full_matrices=False)
+val**2
+vec
+
+# cov matrix
+np.dot(centered_data.T, centered_data) / (len(X) - 1)
 
 #################################################
-############# m == cov(x,y) / var(x) ############
+########### m == cov(x1,x2) / var(x1) ###########
 #################################################
 
 # covariance [2x2]
@@ -143,23 +166,25 @@ cov/var1 # m!!!
 cov/var2
 
 # calculate the mean of each column
-M = np.mean(X.T, axis=1)
-print(M)
+M = np.mean(X, axis=0)
 # center columns by subtracting column means
 C = X - M
-print(C)
+C
 # calculate covariance matrix of centered matrix
-V = np.cov(C.T)
-print(V)
+# V = np.cov(C.T)
+V = np.dot(C.T, C) / (len(X) - 1)
+V
 # eigendecomposition of covariance matrix
 values, vectors = eig(V)
-print(vectors)
-print(values)
+vectors
+values
+values*(len(X) - 1)
 # project data
 P = vectors.T.dot(C.T)
-print(P.T)
+P.T
 
-np.var(P[0]) / (np.var(P[0]) + np.var(P[1])) # PC1 96% var
+values[0] / (values[0] + values[1])
+np.var(P[0]) / (np.var(P[0]) + np.var(P[1])) # PC1 96% tot var
 
 
 plt.scatter(X1, X2, alpha=0.2)
@@ -174,13 +199,3 @@ plt.grid(alpha=0.2)
 plt.axhline(y=0, c='g')
 plt.axvline(x=0, c='m')
 plt.show()
-
-
-# svd
-centered_data = X - np.mean(X, axis=0)
-U, val, vec = svd(centered_data, full_matrices=False)
-U
-val
-vec
-coefficients = np.dot(U, np.diag(val))
-coefficients

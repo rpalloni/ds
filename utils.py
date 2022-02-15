@@ -20,6 +20,7 @@ y = [4, 6, 8]
 # 1D array
 a = np.array(x)
 a.shape
+type(a)
 a
 
 # 2D array
@@ -90,6 +91,14 @@ mat2x3.dot(mat3x2)
 
 print(mat2x3 @ mat2x3) # not conformable
 mat2x3.dot(mat2x3)
+
+
+M = np.matrix([[5, 5], [-1, 7]])
+M.T*M
+
+V = np.array([[5, 5], [-1, 7]])
+V.T*V # KO: object type affects result
+np.dot(V.T, V) # OK
 
 # Sequences
 t = np.linspace(0, 20, 50)
