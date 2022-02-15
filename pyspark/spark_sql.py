@@ -38,6 +38,7 @@ dataframe.select("author", "title", "rank", "price").show(10)
 
 # where
 dataframe.where(dataframe.publisher == 'Little, Brown').count()
+dataframe.where(dataframe.publisher == 'Little, Brown').select('author').show(20)
 
 # when
 dataframe.select("title", when(dataframe.title != 'ODD HOURS', 1).otherwise(0)).show(10)

@@ -37,7 +37,7 @@ df_s.select("Ozone").show(10)
 df_s.describe(['Ozone', 'SolarRay']).show()
 
 # SQL syntax
-df_s.createOrReplaceTempView('airdata')
+df_s.createOrReplaceTempView('airdata') # create an SQL view
 spark.sql('select * from airdata limit 10').show()
 
 # NAs
