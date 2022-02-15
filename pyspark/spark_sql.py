@@ -36,6 +36,9 @@ dataframe.coalesce(1).rdd.getNumPartitions() # reduce to 1 partition
 dataframe.select("author").show(10)
 dataframe.select("author", "title", "rank", "price").show(10)
 
+# where
+dataframe.where(dataframe.publisher == 'Little, Brown').count()
+
 # when
 dataframe.select("title", when(dataframe.title != 'ODD HOURS', 1).otherwise(0)).show(10)
 
