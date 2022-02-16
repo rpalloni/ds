@@ -2,10 +2,10 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import when
 
 # create spark session
-sc = SparkSession.builder.appName("NYTbooks")\
-    .config("spark.sql.shuffle.partitions", "50") \
-    .config("spark.driver.maxResultSize", "5g") \
-    .config("spark.sql.execution.arrow.enabled", "true")\
+sc = SparkSession.builder.appName('NYTbooks')\
+    .config('spark.sql.shuffle.partitions', '50') \
+    .config('spark.driver.maxResultSize', '5g') \
+    .config('spark.sql.execution.arrow.enabled', 'true')\
     .getOrCreate()
 
 dataframe = sc.read.json('nyt2.json') # kaggle data - New York Times Best Sellers
@@ -33,55 +33,64 @@ dataframe.coalesce(1).rdd.getNumPartitions() # reduce to 1 partition
 
 ################### DataFrame API ###################
 # select
-dataframe.select("author").show(10)
-dataframe.select("author", "title", "rank", "price").show(10)
+dataframe.select('author').show(10)
+dataframe.select('author', 'title', 'rank', 'price').show(10)
 
 # where
 dataframe.where(dataframe.publisher == 'Little, Brown').count()
 dataframe.where(dataframe.publisher == 'Little, Brown').select('author').show(20)
 
 # when
-dataframe.select("title", when(dataframe.title != 'ODD HOURS', 1).otherwise(0)).show(10)
+dataframe.select('title', when(dataframe.title != 'ODD HOURS', 1).otherwise(0)).show(10)
 
 # isin
-dataframe[dataframe.author.isin("John Sandford", "Emily Giffin")].show(5) # records with specified authors if in the given options
+dataframe[dataframe.author.isin('John Sandford', 'Emily Giffin')].show(5) # records with specified authors if in the given options
 
 # like
-dataframe.select("author", "title", dataframe.title.like("% THE %")).show(15)
+dataframe.select('author', 'title', dataframe.title.like('% THE %')).show(15)
 
 # startswith - endswith
-dataframe.select("author", "title", dataframe.title.startswith("THE")).show(5)
-dataframe.select("author", "title", dataframe.title.endswith("NT")).show(5)
+dataframe.select('author', 'title', dataframe.title.startswith('THE')).show(5)
+dataframe.select('author', 'title', dataframe.title.endswith('NT')).show(5)
 
 # substring
-dataframe.select(dataframe.author.substr(1, 6).alias("title")).show()
+dataframe.select(dataframe.author.substr(1, 6).alias('title')).show()
 
 # groupby
-dataframe.groupBy("rank_last_week").count().show(10)
+dataframe.groupBy('rank_last_week').count().show(10)
 
 
 ##################### SQL syntax ##################
 # Registering a table
-dataframe.registerTempTable("df")
+dataframe.registerTempTable('df')
 
-sc.sql("select * from df").show(3)
+sc.sql('select * from df').show(3)
 
-
-sc.sql("select \
-           CASE WHEN description LIKE '%love%' THEN 'Love_Theme' \
-           WHEN description LIKE '%hate%' THEN 'Hate_Theme' \
-           WHEN description LIKE '%happy%' THEN 'Happiness_Theme' \
-           WHEN description LIKE '%anger%' THEN 'Anger_Theme' \
-           WHEN description LIKE '%horror%' THEN 'Horror_Theme' \
-           WHEN description LIKE '%death%' THEN 'Criminal_Theme' \
-           WHEN description LIKE '%detective%' THEN 'Mystery_Theme' \
-           ELSE 'Other_Themes' \
+sc.sql('select \
+           CASE WHEN description LIKE "%love%" THEN "Love_Theme" \
+           WHEN description LIKE "%hate%" THEN "Hate_Theme" \
+           WHEN description LIKE "%happy%" THEN "Happiness_Theme" \
+           WHEN description LIKE "%anger%" THEN "Anger_Theme" \
+           WHEN description LIKE "%horror%" THEN "Horror_Theme" \
+           WHEN description LIKE "%death%" THEN "Criminal_Theme" \
+           WHEN description LIKE "%detective%" THEN "Mystery_Theme" \
+           ELSE "Other_Themes" \
            END Themes \
-   from df").groupBy('Themes').count().show()
+    from df').groupBy('Themes').count().show()
 
 
 ###################### save result ##################
-dataframe.select("author", "title").write.save("Authors_Titles.json", format="json")
+(
+    dataframe.select('author', 'title', 'publisher')
+    .write.partitionBy('publisher')         # data partitioning by col
+    .save('book_folder', format='json')     # folder/subfolder/partition_file(s) => folder_name/partition_col=xxx/part-xxxxx
+)                                           # default format: .parquet
+
+###################### retrieve partitions ##################
+df = sc.read.json('book_folder')
+# spark reads through the nested structure of partitions
+# without explicit definition of the partition
+
 
 # end session
 sc.stop()
