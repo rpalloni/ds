@@ -11,19 +11,19 @@ Ecosystem components:
 Docs: http://spark.apache.org/docs/latest/api/python/index.html
 
 
-# Spark data structure interfaces
+### Spark data structure interfaces
 - RDD (*original data structure for Apache Spark*)
 - DataFrame (*Python and R like*)
 - Datasets (*Java and Scala only*)
 
-# Data partitioning
+### Data partitioning
 Core Spark feature: data are split in subsets and distributed across nodes to optimize management and calculation
 
-# In-memory computing
+### In-memory computing
 Data is stored in RAM to access the data quickly and accelerate analytics
 
-# Lazy evaluation of transformations
-*Transformation*: map, filter, join, union
+### Lazy evaluation of transformations
+*Transformation*: map, filter, join, union \
 *Action*: operations as reduce, count, show
 *DAG (Directed Acyclic Graph)*: scheduling layer of Spark Architecture
 
