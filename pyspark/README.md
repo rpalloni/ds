@@ -24,7 +24,7 @@ Data is stored in RAM to access the data quickly and accelerate analytics
 
 ### Lazy evaluation of transformations
 *Transformation*: map, filter, join, union \
-*Action*: operations as reduce, count, show
+*Action*: operations as reduce, count, show \
 *DAG (Directed Acyclic Graph)*: scheduling layer of Spark Architecture
 
 Transformations are only added to a DAG of computation (**no data** has been loaded yet) and only when an action is called the DAG gets executed.
