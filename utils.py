@@ -139,12 +139,30 @@ df = pd.DataFrame({'A': 1.,
 df
 
 df.shape # nrows ncols
-df.index
+
+# cols
 df.columns
-df['E'].value_counts()
-df.loc['2020-01-10'] # localize using index
-df.loc[df['E'] == 'red'] # localize using column
+df['E'] # get series using column index (header)
+df[['E']] # get column
+
+# rows
+df.index
+df.loc['2020-01-10'] # localize using row index
+df.loc[:'2020-01-05']
+df.loc[df['E'] == 'red'] # boolean indexing
+df[df['E'] == 'red']
 # df.set_index('column')
+
+df.loc[['2020-01-02', '2020-01-05'], ['C', 'E']]
+df.loc['2020-01-02': '2020-01-05', ['C', 'E']]
+df['E'].value_counts()
+
+df[3:6] # position index (row/col integer indexes)
+df.iloc[3:6]
+df.iloc['2020-01-02': '2020-01-05'] # error!
+df.iloc[0, 2] # get cell
+df.iloc[1:4, 3:5] # get rows and cols interval
+df.iloc[:, [1, 3]] # all rows, some cols
 
 
 # import
