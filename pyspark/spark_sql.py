@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import when
+from pyspark.sql.functions import when, regexp_extract
 
 # create spark session
 sc = SparkSession.builder.appName('NYTbooks')\
@@ -9,8 +9,8 @@ sc = SparkSession.builder.appName('NYTbooks')\
     .getOrCreate()
 
 dataframe = sc.read.json('nyt2.json') # kaggle data - New York Times Best Sellers
-dataframe.show(10)
-dataframe.head()
+dataframe.show(50)
+dataframe.printSchema()
 
 dataframe_dropdup = dataframe.dropDuplicates()
 dataframe_dropdup.show(10)
@@ -58,6 +58,16 @@ dataframe.select(dataframe.author.substr(1, 6).alias('title')).show()
 
 # groupby
 dataframe.groupBy('rank_last_week').count().show(10)
+
+# clean price
+dataframe.groupBy('price').count().show()
+dataframe = dataframe.withColumn('price', dataframe['price'].cast('string'))
+dataframe = dataframe.withColumn('price_', regexp_extract('price', "[+-]?([0-9]+([,.][0-9]|[0-9]+))", 0)) # extract numeric part
+dataframe = dataframe.withColumn('price_', dataframe['price_'].cast('double'))
+dataframe.printSchema()
+
+dataframe.where(dataframe.price_ > 0).select('publisher', 'price_').groupby('publisher').avg('price_').show()
+dataframe.where(dataframe.price_ > 0).select('publisher', 'price_').groupby('publisher').agg({'price_': 'avg', 'publisher': 'count'}).show()
 
 
 ##################### SQL syntax ##################
