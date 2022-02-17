@@ -9,19 +9,35 @@ c = np.dot(np.dot(np.linalg.inv(np.dot(A.T, A)), A.T), B) # b = (X'X)^-1 * X'y
 Bp = A*c
 Bp # projection of B on the space of A
 
-d = 0.1
+d = np.sqrt(Bp[0]**2 + Bp[1]**2) # distance from origin
+d
+
+e = 0.1
 plt.scatter([A[0], B[0]], [A[1], B[1]], color='b')
 plt.scatter(Bp[0], Bp[1], color='r') # projections
 plt.plot([0, A[0]], [0, A[1]], '-')
 plt.plot([A[0], A[1]], [2, 4], '--')
 plt.plot([B[0], Bp[0]], [B[1], Bp[1]], '--')
-plt.annotate('A(1, 2)', xy=(A[0]+d, A[1]))
-plt.annotate('B(4, 2)', xy=(B[0]+d, B[1]))
-plt.annotate('Bp(1.6, 3.2)', xy=(Bp[0]+d, Bp[1]))
+plt.annotate('A(1, 2)', xy=(A[0]+e, A[1]))
+plt.annotate('B(4, 2)', xy=(B[0]+e, B[1]))
+plt.annotate('Bp(1.6, 3.2)', xy=(Bp[0]+e, Bp[1]))
+plt.annotate('d(0, Bp)\n  3.58', xy=(0.3, 2))
 plt.ylim(0, 5)
 plt.xlim(0, 5)
 plt.grid(alpha=0.2)
 plt.show()
+
+# alternative calculation
+iA = np.sqrt(A[0]**2 + A[1]**2)
+uA = A/iA # rescale to unit vector
+np.dot(uA.T, uA) # norm
+
+def get_projection(p, u):
+    return np.dot(p.T, u) / np.dot(u.T, u)
+
+get_projection(B, uA)
+get_projection(B, uA) == d
+
 
 # coordinates of ten points (vectors)
 x_values = np.array([1.2, 5.3, 4.0, 7.4, 3.5, 6.5, 8.4, 5.5, 7.5, 2.0], dtype=float).reshape(10, 1)
@@ -39,7 +55,7 @@ m = np.dot(inv, xy) # b = (X'X)^-1 * X'y
 pv = np.array([1, m[0][0]]).reshape(2, 1) # y = x*m
 
 # coordinates of points orthogonal projections on regression line
-def get_projection(v1, v2=pv):
+def get_proj_coord(v1, v2=pv):
     # same as (np.dot(v1.T, v2) / np.dot(v2.T, v2)) * v2
     inv = np.linalg.inv(np.dot(v2.T, v2))
     xy = np.dot(v2.T, v1)
@@ -51,7 +67,7 @@ def get_projection(v1, v2=pv):
 
 for i in range(len(x_values)):
     v1 = np.array([x_values[i][0], y_values[i][0]]).reshape(2, 1)
-    proj = get_projection(v1) # get projection of each point on the regression line
+    proj = get_proj_coord(v1) # get projection of each point on the regression line
 
     plt.scatter(proj[0], proj[1], color='r') # projections
     plt.plot([x_values[i], proj[0]], [y_values[i], proj[1]], alpha=0.3, color='r', linestyle='--')
