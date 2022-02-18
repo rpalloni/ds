@@ -3,8 +3,11 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-from sklearn.decomposition import PCA
+from sklearn import set_config
+from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
+from sklearn.compose import ColumnTransformer
+from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler, OrdinalEncoder, FunctionTransformer
 
 pd.options.display.max_columns = None
@@ -47,18 +50,18 @@ df = pd.concat([
 
 df.head()
 df.shape
+df.dtypes.value_counts() # presence of object cols (categorical)
 
 ####################################################################################################
 ######################################## data cleaning #############################################
 ####################################################################################################
 
 DROP_COLS = []
-WHITELIST_COLS = []
 
 # nulls
 nulls = pd.isna(df).sum() / len(df) * 100
 nulls.sort_values(ascending=False)
-nulls.plot(kind="hist", xticks=range(0, 110, 10))
+nulls.plot(kind='hist', xticks=range(0, 110, 10))
 plt.show()
 DROP_COLS += nulls[nulls > 50].index.tolist() # drop cols with more than 50% of cells null
 
@@ -71,32 +74,92 @@ DROP_COLS += uniq[uniq <= 1].index.tolist() # drop cols with only 0 or 1 values
 # demographics
 df[['RIDAGEYR', 'RIDAGEMN']].hist() # age yrs and age months
 DROP_COLS += ['RIDAGEMN']
-WHITELIST_COLS += ['RIDAGEYR']
 
 df['RIAGENDR'].value_counts() # M/F 50%
-WHITELIST_COLS += ['RIAGENDR']
 
 df.hist('INDHHIN2', figsize=(8, 6), color='red', bins=50) # skewed hh income
 plt.show()
-WHITELIST_COLS += ['INDHHIN2']
 
-# examinations
-oe = OrdinalEncoder()
-oe.fit_transform(df[[x for x in df.columns if x.startswith('OHX')]]) # tooth caries (categorical to numerical)
-WHITELIST_COLS += [x for x in df.columns if x.startswith('OHX')]
+# medical info
+categ = df.select_dtypes(include=[object])
+[x for x in categ.columns if x.startswith('OHX')] # tooth caries
+set(categ) - set([x for x in categ.columns if x.startswith('OHX')]) # smokers info
 
 df['SMD100BR'].value_counts() # cigarettes brand
 ft = FunctionTransformer(lambda x: pd.notna(x).astype(int))
-ft.fit_transform(df['SMD100BR']).value_counts() # smoker/non-smoker (categorical to dummy)
+ft.fit_transform(df['SMD100BR']).value_counts()
+df['SMOKER'] = ft.fit_transform(df['SMD100BR']) # smoker/non-smoker (categorical to dummy)
 DROP_COLS += ['SMDUPCA', 'CSXTSEQ'] # drop additional smokers info
-WHITELIST_COLS += ['SMD100BR']
 
+oe = OrdinalEncoder()
+oe.fit_transform(df[[x for x in categ.columns if x.startswith('OHX')]])
 
-DROP_COLS = [x for x in set(DROP_COLS) if x not in WHITELIST_COLS]
 df = df.drop(columns=DROP_COLS)
 df.shape
-
 
 ####################################################################################################
 ############################################# PCA ##################################################
 ####################################################################################################
+
+def get_model(df):
+
+    cat_df = df.select_dtypes(include=[object])
+    ct = ColumnTransformer([
+        ('ordinal_encoder', OrdinalEncoder(), [df.columns.tolist().index(x) for x in cat_df.columns if x.startswith('OHX')]),
+    ], remainder='passthrough')
+
+    si = SimpleImputer(strategy='most_frequent')
+
+    ss = StandardScaler()
+
+    pca = PCA(n_components=50, random_state=123) # n components == n columns => set n_components to keep
+
+    pipe = Pipeline([
+        ('column_transformer', ct),
+        ('imputer', si),
+        ('scaler', ss),
+        ('pca', pca)
+    ])
+
+    return pipe
+
+
+# DAG style steps representation
+pipe = get_model(df)
+set_config(display='diagram')
+pipe
+
+
+# plot explained variances
+def plot_pca_variances(pca):
+    plt.bar(range(pca.n_components), pca.explained_variance_ratio_, color='black')
+    plt.title('Variance explained by each component')
+    plt.xlabel('PCA features')
+    plt.ylabel('variance %')
+    plt.show()
+
+
+pipe.fit(df)
+plot_pca_variances(pipe['pca'])
+
+
+pipe = get_model(df)
+pipe.set_params(pca__n_components=7) # set threshold when % gets flat
+pipe.fit(df)
+principal_components = pipe.transform(df)
+plot_pca_variances(pipe['pca'])
+
+
+# reduced df
+principal_components_df = pd.DataFrame(
+    principal_components,
+    index=df.index,
+    columns=[
+        f'PCA{i+1}' for i in range(principal_components.shape[1])
+    ]
+)
+principal_components_df.head()
+principal_components_df.shape
+
+principal_components_df.plot(kind='scatter', x='PCA1', y='PCA2', alpha=.1, color='black')
+plt.show()

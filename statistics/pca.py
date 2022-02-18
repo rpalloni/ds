@@ -1,12 +1,16 @@
 '''
 Principal Component Analysis is a mathematical technique used for dimensionality reduction.
 Its goal is to reduce the number of features while keeping most of the original information.
-Singular Value Decomposition: find eigenvalues and eigenvectors of features
+It is based on Singular Value Decomposition: find eigenvalues and eigenvectors of features:
+*eigenvectors of the Covariance matrix are the directions of the axes where there is the most variance
+*eigenvalues are the coefficients attached to eigenvectors, which give the amount of variance carried in each component
+By ranking your eigenvectors in order of their eigenvalues, highest to lowest, you get the principal components in order of significance
+Since each PC correspond to a variable, excluding the least significant removes non relevant variables
 '''
 
 import numpy as np
 import matplotlib.pyplot as plt
-from numpy.linalg import eig, svd, norm
+from numpy.linalg import eig, svd
 
 # two vars and ten samples2020
 X = np.array([[14, 8], [22, 12], [17, 10], [19, 7], [21, 9], [9, 5], [10, 3], [6, 1], [4, 3], [12, 4]], dtype=float)
@@ -54,7 +58,7 @@ plt.annotate(f'PC1 (m={round(m[0][0],3)})', xy=(4, 7), color='g', weight='bold')
 plt.text(-1, -6, 'PC1: X2/X1 ratio \nData more spread along X1 \nX1 more important to describe data variability',
          bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5), fontsize=8)
 plt.plot([0, c1], [0, 0], '-', color='r')
-plt.plot([c1, c1], [c2, 0], '-', color='r')
+plt.plot([c1, c1], [c2[0][0], 0], '-', color='r')
 plt.annotate('i', xy=(2.5, 2), color='r')
 plt.annotate('c1', xy=(2.5, -0.6), color='r')
 plt.annotate('c2', xy=(5.2, 1.2), color='r')
@@ -88,9 +92,9 @@ plt.plot(X1, X1*-(1/m), '-', color='m') # perpendicular: slope => negative, oppo
 plt.annotate('X', xy=(np.mean(X1), np.mean(X2)), weight='bold')
 plt.annotate(f'PC1 (m={round(m[0][0],3)})', xy=(4, 7), color='g', weight='bold')
 plt.annotate('PC2: PC1 perpendicular line via origin', xy=(-5, 10), color='m', weight='bold')
-plt.plot([0, -c2], [0, 0], '-', color='r')
-plt.plot([-c2[0], -c2[0]], [0, c1], '-', color='r')
-plt.annotate('i', xy=(2.5, 2), color='r')
+plt.plot([0, -c2[0][0]], [0, 0], '-', color='r')
+plt.plot([-c2[0][0], -c2[0][0]], [0, c1], '-', color='r')
+plt.annotate('i', xy=(-0.5, 2), color='r')
 plt.annotate('c1', xy=(-3.8, 2.2), color='r')
 plt.annotate('c2', xy=(-2.5, -0.6), color='r')
 plt.xlabel('X1')
@@ -124,14 +128,38 @@ for i in range(len(X)):
     eigenvalue_pc1 += proj_pc1**2
     eigenvalue_pc2 += proj_pc2**2
 
-eigenvalue_pc1, eigenvalue_pc2
+print(eigenvalue_pc1, eigenvalue_pc2)
 
 eigenvalue_pc1 / (len(X) - 1) # PC variation
 
 # PC1_VAR / (PC1_VAR + PC2_VAR) => PC1 % on total variation
 (eigenvalue_pc1 / (len(X) - 1)) / ((eigenvalue_pc1 / (len(X) - 1)) + (eigenvalue_pc2 / (len(X) - 1))) # PC1 96% tot var
 
-# eig svd check
+for i in range(len(X)):
+    p = np.array([X1[i][0], X2[i][0]]).reshape(2, 1)
+    proj_pc1 = u_pc1 * np.dot(p.T, u_pc1) / np.dot(u_pc1.T, u_pc1)
+    proj_pc2 = u_pc2 * np.dot(p.T, u_pc2) / np.dot(u_pc2.T, u_pc2)
+    plt.scatter(proj_pc1[0], proj_pc1[1], color='g')
+    plt.plot([X1[i][0], proj_pc1[0][0]], [X2[i][0], proj_pc1[1][0]], alpha=0.3, color='g', linestyle='--')
+    plt.scatter(proj_pc2[0], proj_pc2[1], color='m')
+    plt.plot([X1[i][0], proj_pc2[0][0]], [X2[i][0], proj_pc2[1][0]], alpha=0.3, color='m', linestyle='--')
+plt.scatter(X1, X2)
+plt.plot(X1, X1*m, '-', color='g')
+plt.plot(X1, X1*-(1/m), '-', color='m')
+plt.annotate('X', xy=(np.mean(X1), np.mean(X2)), weight='bold')
+plt.annotate('PC1', xy=(10, 3), color='g', weight='bold')
+plt.annotate('PC2', xy=(-4, 10), color='m', weight='bold')
+plt.text(-10, -10, 'PC1 projections have larger variability (spaced green dots) \nthan PC2 projections (close magenta dots) ',
+         bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5), fontsize=8)
+plt.xlabel('X1')
+plt.ylabel('X2')
+plt.xlim(-12, 12)
+plt.ylim(-12, 12)
+plt.grid(alpha=0.2)
+plt.show()
+
+
+# eig svd check with numpy
 centered_data = X - np.mean(X, axis=0)
 eval, evec = eig(np.dot(centered_data.T, centered_data))
 eval
