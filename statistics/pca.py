@@ -6,13 +6,17 @@ It is based on Singular Value Decomposition: find eigenvalues and eigenvectors o
 *eigenvalues are the coefficients attached to eigenvectors, which give the amount of variance carried in each component
 By ranking your eigenvectors in order of their eigenvalues, highest to lowest, you get the principal components in order of significance
 Since each PC correspond to a variable, excluding the least significant removes non relevant variables
+PROS: reduce dimensionality without losing much information discarding the components with low information and considering the remaining as your new variables.
+CONS: PC are less interpretable and don’t have any real meaning since they are constructed as linear combinations of the initial variables.
 '''
 
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 from numpy.linalg import eig, svd
+from sklearn.decomposition import PCA
 
-# two vars and ten samples2020
+# two vars and ten samples
 X = np.array([[14, 8], [22, 12], [17, 10], [19, 7], [21, 9], [9, 5], [10, 3], [6, 1], [4, 3], [12, 4]], dtype=float)
 
 plt.scatter(X[:, 0], X[:, 1])
@@ -29,8 +33,8 @@ for i in range(len(X)):
     plt.arrow(X[i, 0], X[i, 1], -1, 0, width=0.01, length_includes_head=True, head_width=0.5, head_length=0.2, fill=False, color='green')
     plt.arrow(X[i, 0], X[i, 1], 0, -1, width=0.01, length_includes_head=True, head_width=0.2, head_length=0.5, fill=False, color='red')
 plt.annotate('X', xy=(mu1, mu2), weight='bold') # center of data
-plt.annotate('mx1', xy=(mu1, 0.1)) # center of data
-plt.annotate('mx2', xy=(0.1, mu2)) # center of data
+plt.annotate('mx1', xy=(mu1, 0.1))
+plt.annotate('mx2', xy=(0.1, mu2))
 plt.xlabel('X1')
 plt.ylabel('X2')
 plt.show()
@@ -227,3 +231,13 @@ plt.grid(alpha=0.2)
 plt.axhline(y=0, c='g')
 plt.axvline(x=0, c='m')
 plt.show()
+
+#################################################
+#################### sklearn ####################
+#################################################
+
+pca = PCA(n_components=2, random_state=123)
+m = pca.fit(X)
+m.explained_variance_ # eigenvalues
+m.components_ # eigenvectors
+pd.DataFrame(abs(pca.components_), columns=['X1', 'X2'], index=['PC1', 'PC2'])

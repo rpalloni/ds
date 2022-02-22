@@ -1,14 +1,15 @@
 import numpy as np
 import pandas as pd
-import seaborn as sns
 import matplotlib.pyplot as plt
 
 from sklearn import set_config
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
 from sklearn.compose import ColumnTransformer
-from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler, OrdinalEncoder, FunctionTransformer
+
+from sklearn.decomposition import PCA # https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html
+from sklearn.cluster import KMeans # https://scikit-learn.org/stable/modules/clustering.html
 
 pd.options.display.max_columns = None
 
@@ -151,15 +152,92 @@ plot_pca_variances(pipe['pca'])
 
 
 # reduced df
-principal_components_df = pd.DataFrame(
+pc_df = pd.DataFrame(
     principal_components,
     index=df.index,
     columns=[
         f'PCA{i+1}' for i in range(principal_components.shape[1])
     ]
 )
-principal_components_df.head()
-principal_components_df.shape
+pc_df.head()
+pc_df.shape
 
-principal_components_df.plot(kind='scatter', x='PCA1', y='PCA2', alpha=.1, color='black')
+pc_df.plot(kind='scatter', x='PCA1', y='PCA2', alpha=.1, color='black')
+plt.show()
+
+
+plt.figure(figsize=(10, 10))
+ax = plt.axes(projection='3d')
+p = ax.scatter3D(
+    pc_df['PCA1'],
+    pc_df['PCA2'],
+    pc_df['PCA3'],
+    alpha=.1, color='black'
+)
+ax.set_xlabel('PCA1')
+ax.set_ylabel('PCA2')
+ax.set_zlabel('PCA3')
+
+plt.show()
+
+pca = pipe['pca']
+pca.explained_variance_ # eigenvalues
+pca.components_ # eigenvectors
+pca.feature_names_in_
+
+# most important var for each component
+most_important = [np.abs(pca.components_[i]).argmax() for i in range(pca.n_components_)]
+df.columns[most_important]
+
+# ten most important vars for component 1
+from operator import itemgetter
+pca1_top_cols = sorted(
+                    enumerate(abs(pca.components_[0])), # number-value tuple
+                    key=itemgetter(1), # use value as ordering key
+                    reverse=True)[:10] # desc order
+pca1_top_cols
+
+
+####################################################################################################
+############################################ CLUSTER ###############################################
+####################################################################################################
+
+ks = range(1, 10)
+inertias = [] # within-cluster sum-of-squares
+for k in ks:
+    # KMeans instance with k clusters: model
+    model = KMeans(n_clusters=k, init='k-means++', n_init=10, max_iter=300, tol=0.0001, random_state=123)
+    model.fit(pc_df)
+    inertias.append(model.inertia_)
+
+plt.plot(ks, inertias, '-o', color='black')
+plt.xlabel('number of clusters, k')
+plt.ylabel('inertia')
+plt.xticks(ks)
+plt.show()
+
+K = 4 # plot flattens at 4 clusters
+model = KMeans(n_clusters=K, init='k-means++', n_init=10, max_iter=300, tol=0.0001, random_state=123)
+model.fit(pc_df)
+labels = model.labels_
+centers = model.cluster_centers_
+centers.shape # 4 clusters, 7 dimensions
+
+pc_df['cluster'] = labels
+CLUSTER_COLORS = ['green', 'yellow', 'red', 'orange']
+
+
+plt.figure(figsize=(10, 10))
+ax = plt.axes(projection='3d')
+p = ax.scatter3D(
+    pc_df['PCA1'],
+    pc_df['PCA2'],
+    pc_df['PCA3'],
+    alpha=0.2, color=pc_df['cluster'].apply(lambda i: CLUSTER_COLORS[i]),
+)
+ax.set_xlabel('PCA1')
+ax.set_ylabel('PCA2')
+ax.set_zlabel('PCA3')
+ax.view_init(60, -120) # view angle
+
 plt.show()
