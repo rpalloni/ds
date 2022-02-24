@@ -3,27 +3,27 @@ import matplotlib.pyplot as plt
 
 # basic gradient descendent
 def gradient_descent(gradient, start, learn_rate, n_iter, tolerance):
-    vector = start
-    steps = [vector]
+    x = start
+    steps = [x]
     for i in range(n_iter):
-        diff = -learn_rate * gradient(vector)
-        if abs(diff) <= tolerance:
+        x -= gradient(x) * learn_rate # share of the derivative information used
+        if abs(x) <= tolerance:
             break
-        vector += diff
-        steps.append(vector)
+        steps.append(x)
+    print(f'Minimum reached in {i} iterations')
     return steps
 
 xsteps = gradient_descent(
     gradient=lambda x: 2*x, # 2x derivative of f(x) = x^2 to minimize
     start=10.0,
-    learn_rate=0.2,
-    n_iter=50,
-    tolerance=1e-06
+    learn_rate=0.1,
+    n_iter=100,
+    tolerance=0.000001
 )
 
 xsteps
-
 '{:.10f}'.format(xsteps[-1]) # numeric solution very close to zero
+
 s = np.array(xsteps)
 x = np.linspace(-10, 10)
 
@@ -93,7 +93,7 @@ plt.show()
 lsteps = gradient_descent(
     gradient=lambda x: 2 * x,
     start=10.0,
-    learn_rate=0.8, # larger steps
+    learn_rate=0.9, # larger steps => lower accuracy and local min trap
     n_iter=50,
     tolerance=1e-06
 )
@@ -205,7 +205,6 @@ def mse_loss(weights, X, Y):
     squared_error = np.dot(residuals.T, residuals)  # s = e'e
     return residuals, (1/n) * squared_error         # mse = 1/n * s
 
-
 def gradient_descent(X, Y, iterations=100, learn_rate=0.01):
     n = X.shape[0] # obs
     m = X.shape[1] # cols
@@ -232,6 +231,7 @@ X = np.insert(X, 0, 1, axis=1)
 X
 
 w = gradient_descent(X, y, 500, 0.00001)
+w[0]
 w[1]
 w[2]
 
