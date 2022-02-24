@@ -4,6 +4,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField, StringType
 from pyspark.ml.feature import VectorAssembler, StringIndexer
 from pyspark.ml.classification import LogisticRegression
+import matplotlib.pyplot as plt
 
 '''
 P=positive, A=Average, N=Negative, B=Bankruptcy, NB=NonBankruptcy
@@ -74,6 +75,18 @@ res = lm.fit(train_data)
 res.coefficients
 res.intercept
 res.summary.roc.show()
+
+res.summary.roc.select('FPR').collect()
+res.summary.roc.select('TPR').collect()
+
+plt.figure(figsize=(5, 5))
+plt.plot([0, 1], [0, 1], 'r--')
+plt.plot(res.summary.roc.select('FPR').collect(),
+         res.summary.roc.select('TPR').collect())
+plt.xlabel('FPR')
+plt.ylabel('TPR')
+plt.show()
+
 
 pred = res.evaluate(test_data)
 pred.accuracy
