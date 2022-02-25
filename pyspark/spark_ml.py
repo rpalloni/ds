@@ -76,8 +76,8 @@ res.coefficients
 res.intercept
 res.summary.roc.show()
 
-res.summary.roc.select('FPR').collect()
-res.summary.roc.select('TPR').collect()
+res.summary.roc.select('FPR').collect() # false positive rate
+res.summary.roc.select('TPR').collect() # true positive rate
 
 plt.figure(figsize=(5, 5))
 plt.plot([0, 1], [0, 1], 'r--')
