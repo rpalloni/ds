@@ -7,7 +7,7 @@ from keras.layers import Dense # standard neural network
 import tensorflow as tf
 tf.random.set_seed(0) # set reproducible results
 
-df = pd.read_csv('suv_data.csv')
+df = pd.read_csv('https://raw.githubusercontent.com/rpalloni/dataset/master/suv_data.csv')
 df.head()
 df.shape
 df = df.drop(columns='User ID')
