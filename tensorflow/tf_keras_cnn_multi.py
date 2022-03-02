@@ -6,6 +6,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 
+'''
+flowers dataset contains five sub-directories, one per class:
+flower_photos
+ |- daisy
+ |- dandelion
+ |- roses
+ |- sunflowers
+ |- tulips
+'''
+
 dataset_url = 'https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz'
 data_dir = tf.keras.utils.get_file(origin=dataset_url,
                                    fname='flower_photos',
