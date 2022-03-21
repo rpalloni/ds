@@ -11,41 +11,53 @@ data = pd.read_csv('https://raw.githubusercontent.com/rpalloni/dataset/master/in
 data.info()
 data.shape
 
+data.head()
+data.describe()
+
 ################### EDA #######################
+
+plt.title('Distribution of premium')
+sns.histplot(data.premium, kde=False)
+plt.show()
+
+sns.pairplot(data)
+plt.show()
+
+sns.pairplot(data, hue='sex')
+plt.show()
 
 sns.set_style('whitegrid', {'grid.linestyle': '--'})
 plt.figure(figsize=(10, 6))
-sns.scatterplot(x='age', y='premium', data=data, hue='sex')
+sns.scatterplot(x='age', y='premium', data=data, hue='sex') # hue = groups
 plt.xlabel('Age')
 plt.ylabel('Premium')
 plt.title('Distribution of premium by age and sex')
 plt.show()
 
-smokers = data['smoker'].unique()
-colors = ['Reds', 'Greens']
-for i, smoker in enumerate(smokers):
-    temp = data[data['smoker'] == smoker]
-    sns.scatterplot(temp['bmi'], temp['premium'], cmap=colors[i])
-plt.legend(smokers)
+sns.set_style('whitegrid', {'grid.linestyle': '--'})
+plt.figure(figsize=(10, 6))
+sns.scatterplot(x='bmi', y='premium', data=data, hue='smoker') # hue = groups
+plt.xlabel('BMI')
+plt.ylabel('Premium')
+plt.title('Distribution of premium by bmi and smoker')
 plt.show()
-
-plt.figure(figsize=(10, 5))
-sns.boxplot(x='region', y='premium', hue='sex', data=data)
-plt.show()
-
 
 sns.set_style('whitegrid', {'grid.linestyle': '--'})
 plt.figure(figsize=(10, 6))
 sns.scatterplot(x='age', y='premium', data=data, hue='smoker')
 plt.xlabel('Age')
 plt.ylabel('Charges')
-plt.title('Distribution of charges by age and sex')
+plt.title('Distribution of premium by age and smoker')
 plt.show()
 
+plt.figure(figsize=(10, 5))
+sns.boxplot(x='region', y='premium', hue='sex', data=data)
+plt.title('Boxplots of premium by sex and region')
+plt.show()
 
 plt.figure(figsize=(10, 8))
 sns.boxplot(x='children', y='premium', hue='smoker', data=data)
-plt.title('Distribution of charges by number of children')
+plt.title('Distribution of premium by number of children and smoker')
 plt.show()
 
 
@@ -77,7 +89,9 @@ model_coef.loc['intercept', 0] = model1.intercept_
 model_coef
 
 # model performance
-model_performance = pd.DataFrame(data=[r2_score(y_test, y_pred), np.sqrt(mean_squared_error(y_test, y_pred))], index=['R2', 'RMSE'])
+model_performance = pd.DataFrame(
+                            data=[r2_score(y_test, y_pred), np.sqrt(mean_squared_error(y_test, y_pred))],
+                            index=['R2', 'RMSE'])
 model_performance
 
 residual = y_test - y_pred
