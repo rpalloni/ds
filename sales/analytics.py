@@ -42,15 +42,24 @@ df['Quantity Ordered'].unique()
 df['Price Each'].unique()
 df['Order Date'].unique()
 
-df[df['Quantity Ordered'] == 'Quantity Ordered'] # column header in data
+df[df['Quantity Ordered'] == 'Quantity Ordered'] # columns header in data
 df = df[df['Quantity Ordered'] != 'Quantity Ordered']
 
 # numerical variables
 df['Quantity Ordered'] = df['Quantity Ordered'].astype('float')
 df['Price Each'] = df['Price Each'].astype('float')
+df['Sales'] = df['Quantity Ordered']*df['Price Each']
+
+df['Quantity Ordered'].hist()
+plt.show()
+
+df['Price Each'].hist(bins=50)
+plt.show()
+
+df['Sales'].hist(bins=50)
+plt.show()
 
 # Sales per Month
-df['Sales'] = df['Quantity Ordered']*df['Price Each']
 sales_per_month = df.groupby(['Month']).agg({'Sales': 'sum'}).sort_values(by=['Sales'], ascending=False).reset_index()
 sales_per_month['% of Total'] = sales_per_month['Sales'] / sales_per_month['Sales'].sum()
 sales_per_month.style.format({'Sales': '{:,.2f}', '% of Total': '{:.2%}'})
@@ -130,6 +139,7 @@ plt.plot(hr, qnt_hr)
 plt.xlabel('Hour')
 plt.ylabel('Quantity')
 plt.grid()
+plt.show()
 
 ### Product basket
 # number of products per order
