@@ -32,7 +32,7 @@ cols_df = pd.DataFrame({
     'null_percentage': pd.isna(df).sum() / len(df) * 100,
     'col_type': df.dtypes
 }).sort_values('null_percentage', ascending=False)
-cols_df.head()
+cols_df
 
 # remove empty cols
 DROPPABLE_COLS = cols_df[cols_df['null_percentage'] > 90].index.tolist()
@@ -50,17 +50,17 @@ df['PoorWeather'].value_counts(dropna=False) # repeat of TSHDSBRSGF
 df = df.drop(['PoorWeather'], axis=1)
 
 # TSHDSBRSGF expand
-colnames = ['Thunder', 'Sleet', 'Hail', 'Dust', 'Smoke', 'Blowing_Snow', 'Rain', 'Snow', 'Glaze', 'Fog']
+colnames = ['Thunder', 'Sleet', 'Hail', 'Dust', 'Smoke', 'Blowing_Snow', 'Rain', 'Snow', 'Glaze', 'Fog'] # ten events
 
 df['TSHDSBRSGF'].value_counts(dropna=False)
 
 df['TSHDSBRSGF'] = df['TSHDSBRSGF'].replace({
     1: '1',
     np.nan: '0'
-}).str.replace(' ', '0').apply(lambda x: '{:0<10}'.format(x))
+}).str.replace(' ', '0').apply(lambda x: '{:0<10}'.format(x)) # event dummy string e.g. 0010000000
 
 events_splitted_df = df['TSHDSBRSGF'].apply(lambda x: pd.Series(
-    dict(zip(colnames, list(str(x))))
+    dict(zip(colnames, list(str(x)))) # list(str('0010000000'))
 )).astype(np.uint8)
 
 df = pd.concat([df, events_splitted_df], axis=1)

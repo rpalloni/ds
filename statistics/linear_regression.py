@@ -123,6 +123,7 @@ coeff_df
 predictors = data[['Wind', 'Temp']].values
 model4 = LinearRegression()
 model4.fit(predictors, ozone)
+model4.intercept_
 coeff_df = pd.DataFrame(model4.coef_[0], data[['Wind', 'Temp']].columns, columns=['Coefficient'])
 coeff_df
 

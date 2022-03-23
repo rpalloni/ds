@@ -39,6 +39,7 @@ y = d4fdx4_f(x, a=1, b=2, c=3)
 plt.plot(x, y)
 plt.ylabel('d^4 f / dx^4', fontsize=20)
 plt.xlabel('x', fontsize=20)
+plt.show()
 
 
 ########################################
@@ -49,6 +50,7 @@ plt.xlabel('x', fontsize=20)
 smooth_data = requests.get('https://raw.githubusercontent.com/rpalloni/dataset/master/sample_data1.txt')
 x, y = np.loadtxt(io.BytesIO(smooth_data.content))
 plt.plot(x, y, 'o--')
+plt.show()
 
 dydx = np.gradient(y, x) # calculate derivative (rate of change)
 dydx
@@ -58,11 +60,12 @@ dydx
 plt.plot(x, y, 'o--', label='y(x)')
 plt.plot(x, dydx, 'o--', label='y\'(x)')
 plt.legend()
-
+plt.show()
 
 noisy_data = requests.get('https://raw.githubusercontent.com/rpalloni/dataset/master/sample_data2.txt')
 x, y = np.loadtxt(io.BytesIO(noisy_data.content))
 plt.plot(x, y, 'o--')
+plt.show()
 
 dydx = np.gradient(y, x)
 

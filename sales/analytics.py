@@ -123,6 +123,9 @@ fig.text(0.9, 0.9, 'Source: db', fontsize=12,
 plt.show()
 
 
+# Sales and Quantity per City and Month
+df.groupby(['Month', 'City']).agg({'Quantity Ordered': 'count', 'Sales': 'sum'})
+
 # Best product
 best_product = df.groupby(['Product']).agg({'Quantity Ordered': 'sum'}).sort_values(by=['Quantity Ordered'], ascending=False).reset_index()
 best_product

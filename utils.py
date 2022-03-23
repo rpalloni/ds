@@ -153,11 +153,13 @@ df.loc[df['E'] == 'red'] # boolean indexing
 df[df['E'] == 'red']
 # df.set_index('column')
 
+df.loc['2020-01-02': '2020-01-05'] # slice indexing (row/col values)
 df.loc[['2020-01-02', '2020-01-05'], ['C', 'E']]
 df.loc['2020-01-02': '2020-01-05', ['C', 'E']]
 df['E'].value_counts()
+df.loc[3:6] # error!
 
-df[3:6] # position index (row/col integer indexes)
+df[3:6] # position indexing (row/col integer indexes)
 df.iloc[3:6]
 df.iloc['2020-01-02': '2020-01-05'] # error!
 df.iloc[0, 2] # get cell
