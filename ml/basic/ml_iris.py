@@ -6,7 +6,7 @@ from sklearn import datasets
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline # using Pipeline to abstract training steps
 from sklearn.preprocessing import LabelBinarizer, LabelEncoder # transformers for target
-from sklearn.preprocessing import StandardScaler, MinMaxScaler, OneHotEncoder # transformers for features
+from sklearn.preprocessing import StandardScaler, OrdinalEncoder, MinMaxScaler, OneHotEncoder # transformers for features
 from sklearn.tree import DecisionTreeClassifier, plot_tree # estimator
 from sklearn.svm import SVC # estimator
 from sklearn.multiclass import OneVsRestClassifier # estimator
