@@ -11,8 +11,10 @@ from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler, OrdinalEncoder
-from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import median_absolute_error
+from sklearn.metrics import mean_squared_error
+
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', 100)
 
@@ -36,6 +38,8 @@ data.info()
 ################################################################################################
 ####################################### preprocessing ##########################################
 ################################################################################################
+
+# nulls
 percentage_missing_data = data.isnull().sum() / data.shape[0]
 ax = percentage_missing_data.plot(kind='bar', color='#E35A5C', figsize=(16, 5))
 ax.set_xlabel('Feature')
@@ -43,6 +47,12 @@ ax.set_ylabel('Percent Empty / NaN')
 ax.set_title('Features Emptiness')
 plt.show()
 
+# low cardinality
+uniq = data.nunique()
+uniq.sort_values()
+uniq[uniq <= 1].index.tolist()
+
+# eda
 count_per_ngc = data['neighbourhood_cleansed'].value_counts()
 ax = count_per_ngc.plot(kind='bar', color='#E35A5C', alpha=0.85, figsize=(16, 5))
 ax.set_title("Neighborhoods by Number of Listings")
@@ -60,8 +70,24 @@ data['bathrooms_text'].value_counts()
 data['bedrooms'].value_counts(dropna=False) # NaN
 data['beds'].value_counts(dropna=False) # NaN
 
-# TODO: amenities
-data['amenities']
+# amenities
+data['amenities'] = data['amenities'].apply(eval) # string to list
+
+def get_amenities(series):
+    return pd.Series([x for ls in series for x in ls])
+
+get_amenities(data['amenities']).nunique()
+get_amenities(data['amenities']).unique()
+get_amenities(data['amenities']).value_counts()[0:50]
+
+fig, ax = plt.subplots(figsize=(14, 4))
+ax.bar(get_amenities(data['amenities']).value_counts()[0:50].index,
+       get_amenities(data['amenities']).value_counts()[0:50].values,
+       color='#E35A5C', )
+ax.set_ylabel('Frequency', size=12)
+ax.tick_params(axis='x', rotation=90)
+ax.set_title('Most frequent amenities', size=14)
+plt.show()
 
 
 # price
@@ -131,8 +157,7 @@ def get_model(df):
 
     ss = StandardScaler()
 
-    # estimator = RandomForestRegressor(random_state=123)
-    estimator = LinearRegression()
+    estimator = RandomForestRegressor(random_state=123)
 
     pipe = Pipeline([
         ('column_transformer', ct),
@@ -144,11 +169,17 @@ def get_model(df):
     return pipe
 
 
+def evaluate_model(model, predict_set, evaluate_set):
+    predictions = model.predict(predict_set)
+    print("Median Absolute Error: " + str(round(median_absolute_error(predictions, evaluate_set), 2)))
+    RMSE = round(np.sqrt(mean_squared_error(predictions, evaluate_set)), 2)
+    print("RMSE: " + str(RMSE))
+
+
 # DAG style steps representation
-pipe = get_model(df)
+pipe = get_model(df[0:999])
 set_config(display='diagram')
 pipe
 
 pipe.fit(train_X, train_y)
-pipe['estimator'].intercept_
-pipe['estimator'].coef_
+evaluate_model(pipe, test_X, test_y)
