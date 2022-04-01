@@ -1,4 +1,3 @@
-
 #####################################################################
 ################ numpy http://www.numpy.org/ ########################
 #####################################################################
@@ -133,7 +132,7 @@ df = pd.DataFrame({'A': 1.,
                    'B': pd.Timestamp('20130102'),
                    'C': pd.Series(np.random.randn(10), dtype='float32', index=index),
                    'D': np.array(np.random.randn(10), dtype='int32'),
-                   'E': pd.Categorical(["red", "green", "yellow", "red", "yellow", "yellow", "white", "red", "red", "green"]),
+                   'E': pd.Categorical(['red', 'green', 'yellow', 'red', 'yellow', 'yellow', 'white', 'red', 'red', 'green']),
                    'F': np.float64([27.25, 70.35, 68.25, 6.30, 29.65, 8.35, 7.85, 84.25, 32.5, 26.35])},
                   index=index)
 df
@@ -165,6 +164,45 @@ df.iloc['2020-01-02': '2020-01-05'] # error!
 df.iloc[0, 2] # get cell
 df.iloc[1:4, 3:5] # get rows and cols interval
 df.iloc[:, [1, 3]] # all rows, some cols
+
+# Lists: pandas reads lists as strings
+fd = pd.DataFrame({
+    'name': ['tammy', 'bonny', 'helga', 'tom', 'jerome', 'hans', 'lisa', 'tyla', 'steve', 'antonie'],
+    'age': [6, 8, 8, 10, 7, 9, 10, 6, 8, 5],
+    'favorite_fruits': [
+        str(['banana', 'mango', 'orange']),
+        str(['apple', 'pear', 'banana', 'watermelon']),
+        str([]),
+        str(['banana', 'maracuja', 'watermelon', 'apple', 'pineapple']),
+        str(['strawberry', 'raspberry']),
+        str(['strawberry', 'apple', 'watermelon']),
+        str(['mango', 'pineapple', 'orange']),
+        str(['apple', 'pineapple']),
+        str(['apple', 'banana', 'orange', 'pear']),
+        str(['peach', 'strawberry'])]
+})
+
+fd
+fd['favorite_fruits'] = fd['favorite_fruits'].apply(eval) # convert to lists
+
+def get_all_fruits(series):
+    return pd.Series([x for ls in series for x in ls])
+
+get_all_fruits(fd['favorite_fruits']).nunique()
+get_all_fruits(fd['favorite_fruits']).unique()
+get_all_fruits(fd['favorite_fruits']).value_counts()
+
+fruits_expanded = fd['favorite_fruits'].apply(pd.Series)
+fruits_expanded
+
+def dummify_fruits(item_lists, unique_items):
+    bool_dict = {}
+    for i, item in enumerate(unique_items):
+        bool_dict[item] = item_lists.apply(lambda x: item in x)
+    return pd.DataFrame(bool_dict)
+
+fruits_bool = dummify_fruits(fd['favorite_fruits'], get_all_fruits(fd['favorite_fruits']).unique())
+fruits_bool
 
 
 # import
