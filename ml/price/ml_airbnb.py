@@ -70,6 +70,12 @@ data['bathrooms_text'].value_counts()
 data['bedrooms'].value_counts(dropna=False) # NaN
 data['beds'].value_counts(dropna=False) # NaN
 
+# price
+data['price'] = pd.to_numeric(data['price'].str.replace('\$|,', ''))
+data['price'].describe()
+data['price'].hist(bins=50)
+plt.show()
+
 # amenities
 data['amenities'] = data['amenities'].apply(eval) # string to list
 
@@ -89,12 +95,20 @@ ax.tick_params(axis='x', rotation=90)
 ax.set_title('Most frequent amenities', size=14)
 plt.show()
 
+def dummify_amenities(item_lists, unique_items):
+    bool_dict = {}
+    for i, item in enumerate(unique_items):
+        bool_dict[item] = item_lists.apply(lambda x: item in x)
+    return pd.DataFrame(bool_dict)
 
-# price
-data['price'] = pd.to_numeric(data['price'].str.replace('\$|,', ''))
-data['price'].describe()
-data['price'].hist(bins=50)
-plt.show()
+d_amenities = dummify_amenities(data['amenities'], get_amenities(data['amenities']).unique())
+d_amenities
+
+data = pd.concat([data, d_amenities], axis=1)
+data.shape
+
+data.groupby(['Wifi', ]).agg({'price': 'median'})
+
 
 data['has_availability'].value_counts() # int64
 data = data.drop(['has_availability'], axis=1)
