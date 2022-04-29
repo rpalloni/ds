@@ -40,11 +40,10 @@ So, just tell Spark what is the eventual answer to get and it figures out best w
 A series of transformation on intermediate (abstract) datasets: \
 dt = dataframe.where(dataframe.price > 0).select('publisher', 'price').groupby('publisher').avg('price') # lazy evaluation \
 
-The actual computation:
+The actual computation: \
 dt.show() # execution with action
 
 ### Web UI
-https://spark.apache.org/docs/latest/web-ui.html
 Apache Spark provides a web app with user interfaces:
 * Jobs
 * Stages
@@ -59,6 +58,8 @@ In a Spark local environment, components are accessible @:
 * Resource Manager -> localhost:9870
 * Job Tracker -> localhost:8088
 * Node Info -> localhost:8042
+
+Docs: https://spark.apache.org/docs/latest/web-ui.html
 
 ~~~
 from pyspark.sql import SparkSession
