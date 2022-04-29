@@ -1,5 +1,4 @@
-from operator import add, sub
-from time import sleep
+from operator import add
 from pyspark import SparkContext
 from pyspark.streaming import StreamingContext
 

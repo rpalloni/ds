@@ -40,3 +40,5 @@ data = RandomRDDs.uniformRDD(sc, 100, 10)
 data.collect()
 datasq = data.map(lambda d: d*d)
 datasq.collect()
+
+sc.stop()

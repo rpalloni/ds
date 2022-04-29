@@ -27,6 +27,9 @@ schema = StructType() \
             .add("Month", IntegerType(), True) \
             .add("Day", IntegerType(), True)
 
+SparkFiles.getRootDirectory()
+SparkFiles.get('airquality.csv')
+
 df_s = spark.read.csv("file://"+SparkFiles.get('airquality.csv'), header=True, schema=schema) # header present in file
 
 type(df_s) # pyspark.sql.dataframe.DataFrame
