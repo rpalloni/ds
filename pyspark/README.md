@@ -52,8 +52,8 @@ Apache Spark provides a web app with user interfaces:
 * Storage
 * Environment
 * Executors
-* SQL
-to monitor the status of the application, resource consumption of the cluster and configurations.
+* SQL \
+to monitor the status of the application, resource consumption of the cluster and configurations. \
 In a Spark local environment, components are accessible @:
 * Web UI -> localhost:4040
 * Resource Manager -> localhost:9870
