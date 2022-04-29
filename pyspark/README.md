@@ -36,7 +36,7 @@ In alternative, the execution of transformations will materialize the many inter
 This is evidently not efficient and effective since you're really not interested in those intermediate results as such (those are just convenient abstractions while writing the program).
 So, just tell Spark what is the eventual answer to get and it figures out best way to get there.
 
-# Example of transformation pipelining
+### Example of transformation pipelining
 A series of transformation on intermediate (abstract) datasets: \
 dt = dataframe.where(dataframe.price > 0).select('publisher', 'price').groupby('publisher').avg('price') # lazy evaluation \
 
@@ -81,3 +81,5 @@ dataframe.count()                   # job(2): count
 
 spark.stop()
 ~~~
+
+![webui](https://user-images.githubusercontent.com/17080117/165984346-502a0697-629b-40cd-ba14-0809b38d260d.png)
