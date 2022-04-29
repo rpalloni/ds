@@ -35,3 +35,49 @@ This would not be possible if it executed everything as soon as it got it.
 In alternative, the execution of transformations will materialize the many intermediate datasets in memory.
 This is evidently not efficient and effective since you're really not interested in those intermediate results as such (those are just convenient abstractions while writing the program).
 So, just tell Spark what is the eventual answer to get and it figures out best way to get there.
+
+# Example of transformation pipelining
+A series of transformation on intermediate (abstract) datasets: \
+dt = dataframe.where(dataframe.price > 0).select('publisher', 'price').groupby('publisher').avg('price') # lazy evaluation \
+
+The actual computation:
+dt.show() # execution with action
+
+### Web UI
+https://spark.apache.org/docs/latest/web-ui.html
+Apache Spark provides a web app with user interfaces:
+* Jobs
+* Stages
+* Tasks
+* Storage
+* Environment
+* Executors
+* SQL
+to monitor the status of the application, resource consumption of the cluster and configurations.
+In a Spark local environment, components are accessible @:
+* Web UI -> localhost:4040
+* Resource Manager -> localhost:9870
+* Job Tracker -> localhost:8088
+* Node Info -> localhost:8042
+
+~~~
+from pyspark.sql import SparkSession
+
+# create spark session
+spark = SparkSession.builder.master("local[1]") \
+    .appName('DataPlatform') \
+    .getOrCreate()
+
+# transformation
+dataframe = (
+    spark.read                      # job(0): read
+    .option('inferSchema', 'True')  # job(1): infer
+    .option('header', 'True')
+    .csv('data.csv')
+)
+
+# action
+dataframe.count()                   # job(2): count
+
+spark.stop()
+~~~
