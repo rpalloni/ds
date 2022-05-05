@@ -44,11 +44,20 @@ https://spark.apache.org/docs/latest/rdd-programming-guide.html#transformations 
 https://spark.apache.org/docs/latest/rdd-programming-guide.html#actions
 
 ### Example of transformation pipelining
-A series of transformation on intermediate (abstract) datasets: \
-dt = dataframe.where(dataframe.price > 0).select('publisher', 'price').groupby('publisher').avg('price') # lazy evaluation \
+A series of transformation on intermediate (abstract) datasets: 
+~~~
+dt = (dataframe
+    .where(dataframe.price > 0)
+    .select('publisher', 'price')
+    .groupby('publisher')
+    .avg('price') # lazy evaluation
+)
+~~~
 
-The actual computation: \
+The actual computation:
+~~~
 dt.show() # execution with action
+~~~
 
 ### Web UI
 Apache Spark provides a web app with user interfaces:
