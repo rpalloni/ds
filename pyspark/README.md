@@ -8,13 +8,17 @@ Ecosystem components:
 * streaming
 * MLlib
 
-Docs: http://spark.apache.org/docs/latest/api/python/index.html
+Docs:
+- http://spark.apache.org/docs/latest/api/python/index.html
+- https://spark.apache.org/docs/latest/api/python/reference/index.html
 
 
 ### Spark data structure interfaces
 - RDD (*original data structure for Apache Spark*)
 - DataFrame (*Python and R like*)
 - Datasets (*Java and Scala only*)
+
+https://spark.apache.org/docs/latest/rdd-programming-guide.html#rdd-operations
 
 ### Data partitioning
 Core Spark feature: data are split in subsets and distributed across nodes to optimize management and calculation
@@ -35,6 +39,9 @@ This would not be possible if it executed everything as soon as it got it.
 In alternative, the execution of transformations will materialize the many intermediate datasets in memory.
 This is evidently not efficient and effective since you're really not interested in those intermediate results as such (those are just convenient abstractions while writing the program).
 So, just tell Spark what is the eventual answer to get and it figures out best way to get there.
+
+https://spark.apache.org/docs/latest/rdd-programming-guide.html#transformations
+https://spark.apache.org/docs/latest/rdd-programming-guide.html#actions
 
 ### Example of transformation pipelining
 A series of transformation on intermediate (abstract) datasets: \
