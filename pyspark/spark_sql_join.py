@@ -75,3 +75,5 @@ data = emp.join(dep, emp.dept == dep.d_id, how='full')
     .mode('append')
     .save()
 )
+
+spark.stop()
