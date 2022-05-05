@@ -46,12 +46,13 @@ https://spark.apache.org/docs/latest/rdd-programming-guide.html#actions
 ### Example of transformation pipelining
 A series of transformation on intermediate (abstract) datasets: 
 ~~~
-dt = (dataframe
+dt = (
+    dataframe
     .where(dataframe.price > 0)
     .select('publisher', 'price')
     .groupby('publisher')
-    .avg('price') # lazy evaluation
-)
+    .avg('price')
+)  # lazy evaluation
 ~~~
 
 The actual computation:
