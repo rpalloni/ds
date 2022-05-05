@@ -40,7 +40,7 @@ In alternative, the execution of transformations will materialize the many inter
 This is evidently not efficient and effective since you're really not interested in those intermediate results as such (those are just convenient abstractions while writing the program).
 So, just tell Spark what is the eventual answer to get and it figures out best way to get there.
 
-https://spark.apache.org/docs/latest/rdd-programming-guide.html#transformations
+https://spark.apache.org/docs/latest/rdd-programming-guide.html#transformations \
 https://spark.apache.org/docs/latest/rdd-programming-guide.html#actions
 
 ### Example of transformation pipelining
