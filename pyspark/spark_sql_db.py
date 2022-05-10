@@ -30,6 +30,11 @@ spark = (
 print('PySpark Version :'+spark.version)
 
 def get_employee(session):
+    '''
+    {'name':'Foo', 'age':'35', 'job':'developer'},
+    {'name':'Joe', 'age':'32', 'job':'engineer'},
+    {'name':'Bob', 'age':'34', 'job':'manager'}
+    '''
     data = (
         session.read
         .format('json')
