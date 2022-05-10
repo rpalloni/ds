@@ -3,7 +3,7 @@ R/W data into postgres db
 '''
 
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col
+from pyspark.sql.functions import col, monotonically_increasing_id
 
 DB_HOST = 'localhost'
 DB_PORT = 5432
@@ -20,7 +20,8 @@ LOCAL_URL = '/path/to/people.json'
 
 
 spark = (
-    SparkSession.builder.master('local[4]')
+    SparkSession.builder
+    .master('local[4]')
     .appName('postgresdata')
     .config('spark.jars', DRIVER_URL)
     .getOrCreate()
@@ -34,11 +35,14 @@ def get_employee(session):
         .format('json')
         .load(LOCAL_URL)
     )
-
     return data
 
 
 df_people = get_employee(spark)
+df_people.show()
+
+# add pk
+df_people = df_people.withColumn('id', monotonically_increasing_id())
 df_people.show()
 
 # CREATE TABLE and INSERT RECORDS

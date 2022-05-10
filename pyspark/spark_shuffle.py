@@ -35,6 +35,11 @@ posts.show(5)
 comments = get_fs_data(spark, '../pyspark/data/comments.json')
 comments.show(5)
 
+'''
+Reshuffle the data in the RDD randomly to create either more or fewer partitions
+and balance it across them. This always shuffles all data over the network.
+'''
+
 p = posts.repartition(3) # split in three partitions
 p.write.save('../pyspark/data/df1', format='json')
 

@@ -14,11 +14,21 @@ Docs:
 
 
 ### Spark data structure interfaces
-- RDD (*original data structure for Apache Spark*)
+- RDD resilient distributed dataset (*original data structure for Apache Spark*)
 - DataFrame (*Python and R like*)
 - Datasets (*Java and Scala only*)
 
-https://spark.apache.org/docs/latest/rdd-programming-guide.html#rdd-operations
+RDD is a fault-tolerant collection of elements that can be operated on in parallel. \
+There are two ways to create RDDs:
+* *parallelizing* an existing iterable/collection defined in driver program (parallelize method)
+* referencing a dataset in an external storage system
+Once created, the distributed dataset can be operated on in parallel
+
+### Partitions
+One important parameter for parallel collections is the number of partitions/slices to cut the dataset into. \
+**Spark will run one task for each partition of the cluster**. Typically you want 2-4 partitions for each CPU in your cluster. \ Normally, Spark tries to set the number of partitions automatically based on your cluster. \
+However, you can also set it manually by passing it as a second parameter to parallelize (e.g. sc.parallelize(data, 10)).
+Spark creates one partition for each block of the file (blocks being 128MB).
 
 ### Data partitioning
 Core Spark feature: data are split in subsets and distributed across nodes to optimize management and calculation
@@ -30,6 +40,8 @@ Data is stored in RAM to access the data quickly and accelerate analytics
 *Transformation*: map, filter, join, union \
 *Action*: operations as reduce, count, show \
 *DAG (Directed Acyclic Graph)*: scheduling layer of Spark Architecture
+
+https://spark.apache.org/docs/latest/rdd-programming-guide.html#rdd-operations
 
 Transformations are only added to a DAG of computation (**no data** has been loaded yet) and only when an action is called the DAG gets executed.
 The aim of lazy evaluation is to optimize the data processing workflow:
@@ -44,7 +56,7 @@ https://spark.apache.org/docs/latest/rdd-programming-guide.html#transformations 
 https://spark.apache.org/docs/latest/rdd-programming-guide.html#actions
 
 ### Example of transformation pipelining
-A series of transformation on intermediate (abstract) datasets: 
+A series of transformation on intermediate (abstract) datasets:
 ~~~
 dt = (
     dataframe
