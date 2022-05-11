@@ -29,10 +29,10 @@ def get_fs_data(session: SparkSession, filepath: str):
     )
     return data
 
-posts = get_fs_data(spark, '../pyspark/data/posts.json')
+posts = get_fs_data(spark, 'data/posts.json')
 posts.show(5)
 
-comments = get_fs_data(spark, '../pyspark/data/comments.json')
+comments = get_fs_data(spark, 'data/comments.json')
 comments.show(5)
 
 '''
@@ -41,14 +41,14 @@ and balance it across them. This always shuffles all data over the network.
 '''
 
 p = posts.repartition(3) # split in three partitions
-p.write.save('../pyspark/data/df1', format='json')
+p.write.save('data/df1', format='json')
 
 c = comments.repartition(3) # split in three partitions
-c.write.save('../pyspark/data/df2', format='json')
+c.write.save('data/df2', format='json')
 
 
-dfposts = spark.read.json('../pyspark/data/df1')
-dfcomms = spark.read.json('../pyspark/data/df2')
+dfposts = spark.read.json('data/df1')
+dfcomms = spark.read.json('data/df2')
 
 df = (
     dfposts
@@ -65,6 +65,6 @@ df.show()
 # however its data are mapped and reduced in one executor to join records
 df.where(df.pId == '84').count() # 5
 
-df.write.save('../pyspark/data/dfinner', format='json') # keep three partitions (see config)
+df.write.save('data/dfinner', format='json') # keep three partitions (see config)
 
 spark.stop()

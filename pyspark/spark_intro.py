@@ -16,7 +16,7 @@ dataframe = (
     spark.read                      # job(0): read
     .option('inferSchema', 'True')  # job(1): infer
     .option('header', 'True')
-    .csv('../pyspark/data/data.csv')
+    .csv('data/data.csv')
 )
 
 # persist https://spark.apache.org/docs/latest/rdd-programming-guide.html#rdd-persistence
