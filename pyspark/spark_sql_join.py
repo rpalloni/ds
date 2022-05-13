@@ -30,9 +30,17 @@ def get_api_data(session: SparkSession):
     return empl
 
 def get_fs_data(session: SparkSession):
-    ''' get department data from FS'''
+    ''' get department data from FS
+    id,title
+    1,Finance
+    2,Marketing
+    3,Logistics
+    4,Sales
+    5,IT
+    6,HR
+    '''
     depts = (
-        session.read.csv('department.csv', header=True)
+        session.read.csv('data/department.csv', header=True)
     )
     return depts
 
@@ -40,31 +48,43 @@ def get_fs_data(session: SparkSession):
 dep = get_fs_data(spark)
 dep.show()
 
+dep = dep.withColumnRenamed('id', 'did')
+dep.show()
+
 emp = get_api_data(spark)
 emp.show()
 
+emp = emp.withColumnRenamed('id', 'eid')
+
 # inner join
-emp.join(dep, emp.dept == dep.d_id, how='inner').show()
+emp.join(dep, emp.dept == dep.did, how='inner').show()
 
 # full outer join
-emp.join(dep, emp.dept == dep.d_id, how='full').show() # or outer or fullouter
+emp.join(dep, emp.dept == dep.did, how='full').show() # or outer or fullouter
 
 # left join
-emp.join(dep, emp.dept == dep.d_id, how='left').show() # or leftouter
+emp.join(dep, emp.dept == dep.did, how='left').show() # or leftouter
 
 # right join
-emp.join(dep, emp.dept == dep.d_id, how='right').show() # or rightouter
+emp.join(dep, emp.dept == dep.did, how='right').show() # or rightouter
 
+''' join syntax to avoid cols duplication
+df1.join(df2, df1.code == df2.code, how='inner')    # duplicated code column
+
+df1.join(df2, ['code'], how='inner')                # one code column
+'''
 
 # SQL syntax
 emp.createOrReplaceTempView('EMPLOYEE')
 dep.createOrReplaceTempView('DEPARTMENT')
 
-spark.sql('select *  from EMPLOYEE, DEPARTMENT where EMPLOYEE.dept==DEPARTMENT.d_id').show()
-spark.sql('select *  from EMPLOYEE inner join DEPARTMENT on EMPLOYEE.dept==DEPARTMENT.d_id').show()
+spark.sql('select *  from EMPLOYEE, DEPARTMENT where EMPLOYEE.dept==DEPARTMENT.did').show()
+spark.sql('select *  from EMPLOYEE inner join DEPARTMENT on EMPLOYEE.dept==DEPARTMENT.did').show()
 
 
-data = emp.join(dep, emp.dept == dep.d_id, how='full')
+data = emp.join(dep, emp.dept == dep.did, how='full')
+data.show()
+
 
 # CREATE TABLE and INSERT RECORDS
 (
