@@ -19,16 +19,16 @@ dataframe = (
     .csv('data/data.csv')
 )
 
-# persist https://spark.apache.org/docs/latest/rdd-programming-guide.html#rdd-persistence
-dataframe.persist(StorageLevel.MEMORY_AND_DISK) # or dataframe.cache()
-
 # action
 dataframe.count()                   # job(2): count
 
+# persist https://spark.apache.org/docs/latest/rdd-programming-guide.html#rdd-persistence
+dataframe.persist(StorageLevel.MEMORY_AND_DISK) # or dataframe.cache()
 
+
+# parse text
 readmeFile = (
-    spark
-    .read
+    spark.read
     .text('README.md')
     .cache()
 )
@@ -37,7 +37,7 @@ readmeFile.count() # number of rows
 
 linesWithSpark = readmeFile.filter(readmeFile.value.contains('Spark'))
 linesWithSpark.count()
-linesWithSpark.collect() # return all the elements of the dataset as an array at the driver program.
+linesWithSpark.collect() # return all the elements of the dataset as an array to the driver program
 
 
 spark.stop()
